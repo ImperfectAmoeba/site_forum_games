@@ -4,6 +4,7 @@ package com.example.aulabd.model;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 public class Usuario {
 
@@ -57,13 +58,24 @@ public class Usuario {
         this.senha = senha;
     }
 
-    public static Usuario converter(Map<String,Object>registro){
-        String nome = (String) registro.get("nome");
-        String id = (String) registro.get("id");
-        String email = (String) registro.get("email");
-        String senha = (String) registro.get("senha");
-        return new Usuario(nome,id.toString(),email,senha);
+    public static Usuario converter(Map<String,Object> registro){
+    String nome = (String) registro.get("nome");
+    
+    // CORREÇÃO AQUI: O id vem como UUID do banco
+    Object idObj = registro.get("id");
+    String id;
+    
+    if (idObj instanceof UUID) {
+        id = ((UUID) idObj).toString();  // Converte UUID para String
+    } else {
+        id = (String) idObj;  // Se já for String, usa direto
     }
+    
+    String email = (String) registro.get("email");
+    String senha = (String) registro.get("senha");
+    
+    return new Usuario(id, nome, email, senha);
+}
 
     public static ArrayList<Usuario> converterTodos(List<Map<String,Object>> registros){
         ArrayList<Usuario> aux = new ArrayList<>();
