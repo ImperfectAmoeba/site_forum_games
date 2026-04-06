@@ -1,0 +1,227 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro</title>
+    <link rel="stylesheet" th:href="@{css/style.css}">
+    <style>
+        /* Estilos adicionais específicos para a página de login */
+        .main-login {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 70vh;
+            margin: 2rem auto;
+        }
+
+        .card-login {
+            background: white;
+            border-radius: 28px;
+            padding: 2.5rem;
+            box-shadow: 0 15px 35px rgba(23, 55, 90, 0.15);
+            border: 1px solid #d5e0f0;
+            width: 100%;
+            max-width: 450px;
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .login-header h2 {
+            font-size: 2.2rem;
+            color: #1e2b41;
+            margin-bottom: 0.5rem;
+        }
+
+        .login-header p {
+            color: #5b687c;
+            font-size: 1rem;
+        }
+
+        .login-form .form-group {
+            margin-bottom: 1.8rem;
+        }
+
+        .login-form label {
+            display: block;
+            font-weight: 600;
+            color: #1e2b41;
+            margin-bottom: 0.5rem;
+            font-size: 1rem;
+        }
+
+        .login-form input {
+            width: 100%;
+            padding: 1rem 1.2rem;
+            border: 2px solid #dde3ed;
+            border-radius: 50px;
+            font-size: 1rem;
+            transition: all 0.2s;
+            background-color: #fbfdff;
+        }
+
+        .login-form input:focus {
+            outline: none;
+            border-color: #5f7eb3;
+            box-shadow: 0 0 0 3px rgba(83, 121, 186, 0.15);
+        }
+
+        .login-options {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 1.5rem 0 2rem;
+            font-size: 0.95rem;
+        }
+
+        .remember-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .remember-checkbox input {
+            width: auto;
+            accent-color: #1e3b5c;
+        }
+
+        .forgot-password {
+            color: #3b4e7a;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .forgot-password:hover {
+            text-decoration: underline;
+            color: #1f2b44;
+        }
+
+        .btn-login {
+            width: 100%;
+            background-color: #1e3b5c;
+            color: #1e3b5c;
+            border: none;
+            padding: 1rem;
+            border-radius: 60px;
+            font-weight: 600;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: 0.2s;
+            border: 2px solid transparent;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 5px 12px rgba(23, 55, 90, 0.3);
+        }
+
+        .btn-login:hover {
+            background-color: #ffffff;
+            color: black;
+            transform: scale(1.02);
+        }
+
+        .register-prompt {
+            text-align: center;
+            color: #5b687c;
+            border-top: 1px solid #dde3ed;
+            padding-top: 1.5rem;
+        }
+
+        .register-prompt a {
+            color: #1e3b5c;
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        .register-prompt a:hover {
+            text-decoration: underline;
+        }
+
+        .login-footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+            font-size: 0.9rem;
+        }
+
+        .login-footer-links a {
+            color: #7a889c;
+            text-decoration: none;
+        }
+
+        .login-footer-links a:hover {
+            color: #1e2b41;
+        }
+
+        /* Mensagem de erro/sucesso (estática) */
+        .login-message {
+            background: #f8fafd;
+            border-radius: 50px;
+            padding: 0.8rem;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            font-size: 0.95rem;
+            border: 1px solid #dde3ed;
+            color: #5b687c;
+        }
+
+        .login-message.info {
+            background: #e3eaf3;
+            color: #1e3b5c;
+            border-color: #b3c7e5;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container header-container">
+            <h1 class="logo"><a th:href="@{/}">GameHelp Forum</a></h1>
+            <nav>
+                <ul class="nav-links">
+                    <li><a th:href="@{/}">Início</a></li>
+                    <li><a th:href="@{/nova-duvida}">Nova Dúvida</a></li>
+                    <li><a th:href="@{/listagem}">Listar Usuarios</a></li>
+                    <li><a th:href="@{/usuario}">Registrar</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container main-login">
+        <div class="card-login">
+            <div class="login-header">
+                <h2>Bem-vindo!</h2>
+                <p>Entre com seus dados para continuar</p>
+            </div>
+
+            <form class="login-form" id="loginForm" action="#" th:action="@{/usuario}" method="post" th:object="${usuario}">
+                <div class="form-group">
+                    <label for="apelido">Apelido</label>
+                    <input type="text" id="apelido" name="apelido" placeholder="Seu nickname" required th:field="*{nome}">
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" placeholder="Digite aqui seu email" required th:field="*{email}">
+                </div>
+
+                <div class="form-group">
+                    <label for="senha">Senha</label>
+                    <input type="password" id="senha" name="senha" placeholder="••••••••" required th:field="*{senha}">
+                </div>
+
+                <input type="submit" value="Cadastrar" class="btn-login">
+            </form>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container footer-content">
+            <p>Fórum de Dicas · projeto acadêmico</p>
+            <p>Programação para Servidores II</p>
+        </div>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro realizado</title>
+    <link rel="stylesheet" th:href="@{css/style.css}">
+    <style>
+        .success-container {
+            max-width: 600px;
+            margin: 3rem auto;
+            text-align: center;
+        }
+        
+        .success-card {
+            background: white;
+            border-radius: 20px;
+            padding: 3rem 2rem;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            border: 1px solid #e7ecf5;
+        }
+        
+        .success-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+        
+        .success-card h2 {
+            color: #1e2b41;
+            margin-bottom: 1rem;
+            font-size: 1.8rem;
+        }
+        
+        .success-card p {
+            color: #5b687c;
+            margin-bottom: 2rem;
+            font-size: 1.1rem;
+        }
+        
+        .btn-voltar {
+            display: inline-block;
+            background-color: #1e3b5c;
+            color: white;
+            padding: 0.8rem 2rem;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: 0.2s;
+        }
+        
+        .btn-voltar:hover {
+            background-color: #2b4e77;
+            transform: scale(1.02);
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container header-container">
+            <h1 class="logo"><a th:href="@{/}">GameHelp Forum</a></h1>
+            <nav>
+                <ul class="nav-links">
+                    <li><a th:href="@{/}">Início</a></li>
+                    <li><a th:href="@{/nova-duvida}">Nova Dúvida</a></li>
+                    <li><a th:href="@{/listagem}">Listar Usuarios</a></li>
+                    <li><a th:href="@{/usuario}">Registrar</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="success-container">
+            <div class="success-card">
+                <div class="success-icon">✅</div>
+                <h2>Cadastro realizado!</h2>
+                <p>Sua conta foi criada com sucesso.</p>
+                <a th:href="@{/}" class="btn-voltar">Voltar para o início</a>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container footer-content">
+            <p>Fórum de Dicas · projeto acadêmico</p>
+            <p>Programação para Servidores II</p>
+        </div>
+    </footer>
+</body>
+</html>

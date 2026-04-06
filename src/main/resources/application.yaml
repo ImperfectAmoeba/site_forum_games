@@ -1,0 +1,19 @@
+server:
+  port: 8000
+
+spring:
+  datasource:
+    url: jdbc:postgresql://127.0.0.1:5432/aula
+    username: postgres
+    password: 123
+    driverClassName: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+
+  sql:
+    init:
+      platform: postgres
+      mode: always
+      schema-locations: classpath:schema-postgresql.sql

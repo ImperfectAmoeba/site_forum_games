@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GameHelp Forum - Discussões</title>
+    <link rel="stylesheet" th:href="@{css/style.css}">
+</head>
+<body>
+    <header>
+        <div class="container header-container">
+            <h1 class="logo"><a th:href="@{/}">GameHelp Forum</a></h1>
+            <nav>
+                <ul class="nav-links">
+                    <li><a th:href="@{/}">Início</a></li>
+                    <li><a th:href="@{/nova-duvida}">Nova Dúvida</a></li>
+                    <li><a th:href="@{/listagem}">Listar Usuarios</a></li>
+                    <li><a th:href="@{/usuario}">Registrar</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        <section class="lista-duvidas">
+            <h2>Discussões recentes</h2>
+
+            <article class="card-duvida">
+                <div class="duvida-header">
+                    <h3><a th:href="@{/detalhes-duvida}" class="duvida-titulo">Como derrotar Malenia (Elden Ring)?</a></h3>
+                    <span class="jogo-tag">Elden Ring</span>
+                </div>
+                <p class="duvida-resumo">Já tentei umas 50 vezes, build de espada colossal. Alguma dica de posicionamento ou invocação?</p>
+                <div class="duvida-meta">
+                    <span>Por: <strong>HollowKnightFan</strong></span>
+                    <span>10 mar 2026</span>
+                    <span>8 respostas</span>
+                </div>
+            </article>
+
+            <article class="card-duvida">
+                <div class="duvida-header">
+                    <h3><a href="#" class="duvida-titulo">Melhor ordem para as fases de Resident Evil 4?</a></h3>
+                    <span class="jogo-tag">Resident Evil 4</span>
+                </div>
+                <p class="duvida-resumo">Comecei agora e quero otimizar os recursos. Devo ir direto para a vila ou explorar áreas laterais?</p>
+                <div class="duvida-meta">
+                    <span>Por: <strong>AshWilliams</strong></span>
+                    <span>09 mar 2026</span>
+                    <span>3 respostas</span>
+                </div>
+            </article>
+
+            <article class="card-duvida">
+                <div class="duvida-header">
+                    <h3><a href="#" class="duvida-titulo">Stardew Valley: como achar o ovo de dinossauro?</a></h3>
+                    <span class="jogo-tag">Stardew Valley</span>
+                </div>
+                <p class="duvida-resumo">Tô no terceiro ano e nada do ovo. Tem algum local específico ou sorte de pesca?</p>
+                <div class="duvida-meta">
+                    <span>Por: <strong>LunarLoom</strong></span>
+                    <span>08 mar 2026</span>
+                    <span>12 respostas</span>
+                </div>
+            </article>
+
+            <article class="card-duvida">
+                <div class="duvida-header">
+                    <h3><a href="detalhe-duvida.html" class="duvida-titulo">The Witcher 3: build de alquimia é viável?</a></h3>
+                    <span class="jogo-tag">The Witcher 3</span>
+                </div>
+                <p class="duvida-resumo">Quero fazer uma build focada em bombas e óleos, mas não sei se scale bem no final do jogo.</p>
+                <div class="duvida-meta">
+                    <span>Por: <strong>WhiteWolf</strong></span>
+                    <span>07 mar 2026</span>
+                    <span>5 respostas</span>
+                </div>
+            </article>
+
+            <article class="card-duvida">
+                <div class="duvida-header">
+                    <h3><a href="#" class="duvida-titulo">Zelda TOTK: melhor maneira de farmar Zonaite?</a></h3>
+                    <span class="jogo-tag">Zelda TOTK</span>
+                </div>
+                <p class="duvida-resumo">Preciso de muitos cristais para as baterias. Além das minas, existe algum método rápido?</p>
+                <div class="duvida-meta">
+                    <span>Por: <strong>HylianHero</strong></span>
+                    <span>06 mar 2026</span>
+                    <span>6 respostas</span>
+                </div>
+            </article>
+        </section>
+
+        <aside class="sidebar">
+            <div class="card-sidebar">
+                <h3>Regras</h3>
+                <ul>
+                    <li>Seja respeitoso</li>
+                    <li>Evite spoilers sem aviso</li>
+                    <li>Marque o jogo no título</li>
+                </ul>
+            </div>
+            <div class="card-sidebar">
+                <h3>Jogos em alta</h3>
+                <ul class="tag-cloud">
+                    <li>Elden Ring</li>
+                    <li>Stardew Valley</li>
+                    <li>Baldur's Gate 3</li>
+                    <li>Hades</li>
+                    <li>Hollow Knight</li>
+                </ul>
+            </div>
+        </aside>
+    </main>
+
+    <footer>
+        <div class="container footer-content">
+            <p>Fórum de Dicas · projeto acadêmico</p>
+            <p>Programação para Servidores II</p>
+        </div>
+    </footer>
+
+    <script th:src="@{js/index.js}"></script>
+</body>
+</html>

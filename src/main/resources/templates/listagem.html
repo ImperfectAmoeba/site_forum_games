@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Usuários - GameHelp Forum</title>
+    <link rel="stylesheet" th:href="@{css/style.css}">
+    <style>
+        .main-usuarios {
+            display: block;
+            max-width: 900px;
+            margin: 2rem auto;
+        }
+
+        .usuarios-header {
+            margin-bottom: 2rem;
+            border-bottom: 3px solid #5d7bb3;
+            padding-bottom: 1rem;
+        }
+
+        .usuarios-header h2 {
+            font-size: 2rem;
+            color: #1e2b41;
+            margin-bottom: 0.5rem;
+        }
+
+        .usuarios-header p {
+            color: #5b687c;
+            font-size: 1rem;
+        }
+
+        .usuarios-count {
+            background: #e3eaf3;
+            display: inline-block;
+            padding: 0.3rem 1rem;
+            border-radius: 40px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #1e3b5c;
+            margin-top: 0.5rem;
+        }
+
+        .tabela-usuarios {
+            background: white;
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: 0 8px 20px rgba(0,20,50,0.06);
+            border: 1px solid #e7ecf5;
+        }
+
+        .tabela-usuarios table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .tabela-usuarios thead {
+            background-color: #1e2b41;
+            color: white;
+        }
+
+        .tabela-usuarios th {
+            padding: 1.2rem 1.5rem;
+            text-align: left;
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        .tabela-usuarios td {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid #eef2f8;
+            color: #2c3e50;
+        }
+
+        .tabela-usuarios tbody tr:hover {
+            background-color: #f8fafd;
+            transition: background 0.2s;
+        }
+
+        .tabela-usuarios tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .id-usuario {
+            font-family: 'Courier New', monospace;
+            font-size: 0.85rem;
+            color: #5b687c;
+            background: #f0f2f5;
+            padding: 0.3rem 0.6rem;
+            border-radius: 8px;
+            display: inline-block;
+        }
+
+        .nome-usuario {
+            font-weight: 600;
+            color: #1e2b41;
+        }
+
+        .empty-message {
+            text-align: center;
+            padding: 3rem;
+            color: #7a889c;
+            background: white;
+            border-radius: 24px;
+            border: 1px solid #e7ecf5;
+        }
+
+        .footer-note {
+            margin-top: 1.5rem;
+            text-align: center;
+            font-size: 0.85rem;
+            color: #7a889c;
+            background: #f8fafd;
+            padding: 0.8rem;
+            border-radius: 12px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container header-container">
+            <h1 class="logo"><a href="index.html">GameHelp Forum</a></h1>
+            <nav>
+                <ul class="nav-links">
+                    <li><a th:href="@{/}">Início</a></li>
+                    <li><a th:href="@{/nova-duvida}">Nova Dúvida</a></li>
+                    <li><a th:href="@{/listagem}">Listar Usuarios</a></li>
+                    <li><a th:href="@{/usuario}">Registrar</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container main-usuarios">
+        <div class="usuarios-header">
+            <h2>Usuários cadastrados</h2>
+            <p>Lista completa de membros do fórum</p>
+        </div>
+
+        <div class="tabela-usuarios">
+            <table id="tabelaUsuarios">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>NOME</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="usuario : ${usuarios}">
+                        <td th:text="${usuario.id}"></td>
+                        <td th:text="${usuario.nome}"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container footer-content">
+            <p>Fórum de Dicas · projeto acadêmico</p>
+            <p>Programação para Servidores II</p>
+        </div>
+    </footer>
+</body>
+</html>

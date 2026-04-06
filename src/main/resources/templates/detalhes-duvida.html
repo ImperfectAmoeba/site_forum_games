@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Como derrotar Malenia? · Fórum Dicas de Jogos</title>
+    <link rel="stylesheet" th:href="@{css/style.css}">
+    <style>
+        .main-detalhe {
+            display: block;
+            max-width: 900px;
+            margin: 2rem auto;
+        }
+
+        .card-detalhe {
+            background: white;
+            border-radius: 24px;
+            padding: 2rem;
+            box-shadow: 0 12px 30px rgba(0,20,50,0.08);
+            border: 1px solid #d5e0f0;
+            margin-bottom: 2rem;
+        }
+
+        .detalhe-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            border-bottom: 2px solid #eef2f8;
+            padding-bottom: 1.5rem;
+        }
+
+        .detalhe-titulo-area h1 {
+            font-size: 2.2rem;
+            color: #1e2b41;
+            line-height: 1.3;
+            margin-bottom: 0.5rem;
+        }
+
+        .detalhe-meta-principal {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            color: #5b687c;
+            font-size: 1rem;
+        }
+
+        .detalhe-acoes {
+            display: flex;
+            gap: 0.8rem;
+        }
+
+        .btn-editar, .btn-excluir {
+            border: none;
+            padding: 0.6rem 1.5rem;
+            border-radius: 40px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            border: 2px solid transparent;
+        }
+
+        .btn-editar {
+            background-color: #e3eaf3;
+            color: #1e3b5c;
+        }
+
+        .btn-editar:hover {
+            background-color: #c9d6e8;
+            transform: scale(1.02);
+        }
+
+        .btn-excluir {
+            background-color: #ffe6e6;
+            color: #a13030;
+        }
+
+        .btn-excluir:hover {
+            background-color: #fcc;
+            transform: scale(1.02);
+        }
+
+        .detalhe-conteudo {
+            font-size: 1.15rem;
+            line-height: 1.7;
+            color: #2c3e50;
+            padding: 1rem 0 1.5rem 0;
+            white-space: pre-wrap;
+        }
+
+        .detalhe-conteudo p {
+            margin-bottom: 1.2rem;
+        }
+
+        .spoiler-alerta {
+            background: #fff3cd;
+            border-left: 8px solid #e6b800;
+            padding: 1rem 1.5rem;
+            border-radius: 16px;
+            margin: 1.5rem 0;
+            font-weight: 500;
+            color: #856404;
+        }
+
+        /* Seção de respostas */
+        .respostas-section {
+            background: white;
+            border-radius: 24px;
+            padding: 2rem;
+            box-shadow: 0 8px 20px rgba(0,20,50,0.04);
+            border: 1px solid #dde3ed;
+        }
+
+        .respostas-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-bottom: 2rem;
+        }
+
+        .respostas-header h2 {
+            font-size: 1.8rem;
+            color: #1e2b41;
+        }
+
+        .btn-nova-resposta {
+            background-color: #1e3b5c;
+            color: white;
+            border: none;
+            padding: 0.8rem 2rem;
+            border-radius: 60px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+            border: 2px solid transparent;
+        }
+
+        .btn-nova-resposta:hover {
+            background-color: #2b4e77;
+            transform: scale(1.02);
+        }
+
+        .card-resposta {
+            padding: 1.5rem 0;
+            border-bottom: 1px solid #e7ecf5;
+        }
+
+        .card-resposta:last-child {
+            border-bottom: none;
+        }
+
+        .resposta-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.8rem;
+        }
+
+        .resposta-autor {
+            font-weight: 600;
+            color: #1e2b41;
+        }
+
+        .resposta-data {
+            color: #7a889c;
+            font-size: 0.9rem;
+        }
+
+        .resposta-conteudo {
+            color: #334155;
+            line-height: 1.6;
+            margin-bottom: 0.8rem;
+        }
+
+        .resposta-acoes {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+        }
+
+        .btn-editar-resposta, .btn-excluir-resposta {
+            background: none;
+            border: none;
+            color: #5b687c;
+            font-size: 0.9rem;
+            cursor: pointer;
+            padding: 0.2rem 0.5rem;
+            border-radius: 20px;
+            transition: 0.2s;
+        }
+
+        .btn-editar-resposta:hover {
+            color: #1e3b5c;
+            background: #e3eaf3;
+        }
+
+        .btn-excluir-resposta:hover {
+            color: #a13030;
+            background: #ffe6e6;
+        }
+
+        /* Formulário de nova resposta (inicialmente oculto) */
+        .form-resposta {
+            background: #f8fafd;
+            border-radius: 20px;
+            padding: 1.8rem;
+            margin-top: 2rem;
+            display: none;
+        }
+
+        .form-resposta.ativo {
+            display: block;
+        }
+
+        .form-resposta textarea {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid #dde3ed;
+            border-radius: 16px;
+            font-size: 1rem;
+            font-family: inherit;
+            margin-bottom: 1rem;
+            resize: vertical;
+        }
+
+        .form-resposta-actions {
+            display: flex;
+            gap: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container header-container">
+            <h1 class="logo"><a th:href="@{/}">GameHelp Forum</a></h1>
+            <nav>
+                <ul class="nav-links">
+                    <li><a th:href="@{/}">Início</a></li>
+                    <li><a th:href="@{/nova-duvida}">Nova Dúvida</a></li>
+                    <li><a th:href="@{/listagem}">Listar Usuarios</a></li>
+                    <li><a th:href="@{/usuario}">Registrar</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container main-detalhe">
+        <article class="card-detalhe" data-id="123">
+            <div class="detalhe-header">
+                <div class="detalhe-titulo-area">
+                    <h1>Como derrotar Malenia (Elden Ring)?</h1>
+                    <div class="detalhe-meta-principal">
+                        <span>Por: <strong>HollowKnightFan</strong></span>
+                        <span>10 mar 2026 · 14:32</span>
+                        <span class="jogo-tag">Elden Ring</span>
+                        <span>8 respostas</span>
+                        <span>247 visualizações</span>
+                    </div>
+                </div>
+                <div class="detalhe-acoes">
+                    <button class="btn-editar" onclick="editarDuvida()">
+                        Editar
+                    </button>
+                    <button class="btn-excluir" onclick="excluirDuvida()">
+                        Excluir
+                    </button>
+                </div>
+            </div>
+
+            <div class="detalhe-conteudo">
+                <p>Já tentei umas 50 vezes, build de espada colossal (nível 145).</p>
+                <p>Ela sempre me mata na segunda fase com a florada ou com o ataque do grab. Uso a Mimic Tear +10, mas mesmo assim ela regenera muito vida.</p>
+                <p>Alguma dica de posicionamento, troca de build ou estratégia específica? Qual é a defesa ideal pra esse fight?</p>
+            </div>
+
+            <div class="spoiler-alerta">
+                ⚠️ Esta discussão contém spoilers.
+            </div>
+        </article>
+
+        <section class="respostas-section">
+            <div class="respostas-header">
+                <h2>Respostas (8)</h2>
+                <button class="btn-nova-resposta" onclick="mostrarFormResposta()">
+                    ＋ Nova resposta
+                </button>
+            </div>
+
+            <div id="formNovaResposta" class="form-resposta">
+                <h3 style="margin-bottom: 1rem;">Sua resposta</h3>
+                <textarea id="respostaTexto" rows="4" placeholder="Digite sua resposta..."></textarea>
+                <div class="form-resposta-actions">
+                </div>
+            </div>
+
+            <div class="lista-respostas">
+                <div class="card-resposta" data-resposta-id="1">
+                    <div class="resposta-meta">
+                        <span class="resposta-autor">LetMeSoloHer</span>
+                        <span class="resposta-data">10 mar 2026 · 15:20</span>
+                    </div>
+                    <div class="resposta-conteudo">
+                        Use a espada "Rio da Guerra" (River of Blood) com build de sangue. Na primeira fase, fique na frente dela para provocar o ataque de investida, desvie e bate. Na segunda fase, quando ela subir para a florada, corre pra trás e depois ataca.
+                
+                </div>
+
+                <div class="card-resposta" data-resposta-id="2">
+                    <div class="resposta-meta">
+                        <span class="resposta-autor">TarnishedPro</span>
+                        <span class="resposta-data">10 mar 2026 · 16:45</span>
+                    </div>
+                    <div class="resposta-conteudo">
+                        Recomendo usar o escudo de gelo e a adaga de gelo (Hoarfrost Stomp). Mantém distância e usa a skill quando ela estiver vindo. Pra segunda fase, usa pedra de gelo pra quebrar a postura.
+                
+                </div>
+
+                <div class="card-resposta" data-resposta-id="3">
+                    <div class="resposta-meta">
+                        <span class="resposta-autor">MoonveilMain</span>
+                        <span class="resposta-data">11 mar 2026 · 09:12</span>
+                    </div>
+                    <div class="resposta-conteudo">
+                        Build de inteligência com a Moonveil. O segredo é usar o ataque carregado pra quebrar a postura rápido. Na segunda fase, quando ela fizer o clone de ataque, corre em círculo.
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container footer-content">
+            <p>Fórum de Dicas · projeto acadêmico estático</p>
+            <p>Programação para Servidores II</p>
+        </div>
+    </footer>
+
+</body>
+</html>

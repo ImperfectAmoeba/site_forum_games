@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nova Dúvida</title>
+    <link rel="stylesheet" th:href="@{css/style.css}">
+</head>
+<body>
+    <header>
+        <div class="container header-container">
+            <h1 class="logo"><a th:href="@{/}">GameHelp Forum</a></h1>
+            <nav>
+                <ul class="nav-links">
+                    <li><a th:href="@{/}">Início</a></li>
+                    <li><a th:href="@{/nova-duvida}">Nova Dúvida</a></li>
+                    <li><a th:href="@{/listagem}">Listar Usuarios</a></li>
+                    <li><a th:href="@{/usuario}">Registrar</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container main-nova-duvida">
+        <section class="form-section">
+            <h2>Compartilhe sua dúvida ou discussão</h2>
+            <p class="subtitulo-form">Preencha os campos abaixo. Lembre-se de mencionar o jogo e evitar spoilers.</p>
+
+            <form id="form-nova-duvida" class="form-duvida">
+                <div class="form-group">
+                    <label for="titulo">Título da discussão *</label>
+                    <input type="text" id="titulo" name="titulo" placeholder="ex: Dúvida sobre chefão final em Sekiro" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="jogo">Jogo relacionado *</label>
+                    <input type="text" id="jogo" name="jogo" placeholder="ex: Elden Ring, The Witcher 3..." required>
+                </div>
+
+                <div class="form-group">
+                    <label for="mensagem">Descreva sua dúvida ou ponto de discussão *</label>
+                    <textarea id="mensagem" name="mensagem" rows="6" placeholder="Detalhe ao máximo para que outros jogadores possam te ajudar..." required></textarea>
+                </div>
+
+                <div class="form-group checkbox-group">
+                    <input type="checkbox" id="spoiler" name="spoiler">
+                    <label for="spoiler">Este post contém spoiler</label>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn-submit">Publicar discussão</button>
+                    <button type="reset" class="btn-reset">Limpar campos</button>
+                </div>
+
+                <div id="feedback-mensagem" class="feedback"></div>
+            </form>
+
+        </section>
+    </main>
+
+    <footer>
+        <div class="container footer-content">
+            <p>Fórum de Dicas · projeto acadêmico</p>
+            <p>Programação para Servidores II</p>
+        </div>
+    </footer>
+
+    <script th:src="@{js/index.js}"></script>
+</body>
+</html>
