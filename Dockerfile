@@ -11,6 +11,4 @@ RUN chmod 777 mvnw
 
 RUN ./mvnw package -DskipTests
 
-RUN ./mvnw package
-
 CMD ["java","-jar","target/aulabd-0.0.1-SNAPSHOT.jar"]
