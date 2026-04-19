@@ -1,16 +1,16 @@
 server:
-  port: 8000
+  port: ${PORT:8000}
 
 spring:
   datasource:
-    url: jdbc:postgresql://127.0.0.1:5432/aula
-    username: postgres
-    password: 123
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
     driverClassName: org.postgresql.Driver
 
   jpa:
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: ${DDL_AUTO:create-drop}
 
   sql:
     init:
