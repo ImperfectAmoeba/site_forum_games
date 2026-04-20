@@ -22,4 +22,12 @@ public class UsuarioService {
     public ArrayList<Usuario> listar_usuarios(){
         return usuarioDAO.listar_usuarios();
     }
+
+    public Usuario buscarPorNomeESenha(String nome, String senha) {
+    return usuarioDAO.buscarPorNomeESenha(nome, senha);
+}
+
+public void deletarUsuario(String id) {
+    usuarioDAO.deletar(id);
+}
 }

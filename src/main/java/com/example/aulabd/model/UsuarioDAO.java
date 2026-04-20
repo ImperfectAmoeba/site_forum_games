@@ -46,4 +46,21 @@ public class UsuarioDAO {
 		return Usuario.converterTodos(jdbc.queryForList(sql));
 	}
 
+	public Usuario buscarPorNomeESenha(String nome, String senha) {
+    String sql = "SELECT * FROM usuario WHERE nome = ? AND senha = ?";
+    
+    try {
+        // Retorna um Map com os dados do usuário
+        java.util.Map<String, Object> resultado = jdbc.queryForMap(sql, nome, senha);
+        return Usuario.converter(resultado);
+    } catch (Exception e) {
+        // Se não encontrar, retorna null
+        return null;
+    }
+}
+
+public void deletar(String id) {
+    String sql = "DELETE FROM usuario WHERE id = ?::uuid";
+    jdbc.update(sql, id);
+}
 }

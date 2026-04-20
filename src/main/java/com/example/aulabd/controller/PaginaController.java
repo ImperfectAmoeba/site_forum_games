@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.example.aulabd.model.Usuario;
 import com.example.aulabd.model.UsuarioService;
@@ -64,28 +65,33 @@ public String listar_usuarios(Model model){
 		model.addAttribute("usuario", new Usuario());
 		return "formusuario";
 	}
-	
 
-    // @GetMapping("/aluno")
-	// public String formAluno(Model model) {
-	// 	model.addAttribute("aluno",new Aluno());
-	// 	return "formaluno";
-	// }
-	
 	@PostMapping("/usuario")
 	public String postCliente(@ModelAttribute Usuario usuario, Model model) {
 		UsuarioService cs = context.getBean(UsuarioService.class);
 		cs.inserirUsuario(usuario);
 		return "sucesso";
 	}
-	
-	// @PostMapping("/aluno")
-	// public String postCliente(@ModelAttribute Aluno aluno,
-	// 						  Model model) {
-	// 	//AlunoService eh feito via autowired
-	// 	AlunoService cs = context.getBean(AlunoService.class);
-	// 	cs.inserirAluno(aluno);
-	// 	return "sucesso";
-	// }
 
+	@GetMapping("/excluir")
+public String formExclusao(Model model) {
+    model.addAttribute("usuario", new Usuario());
+    return "excluir";
+}
+
+	@PostMapping("/excluir")
+public String processarExclusao(@RequestParam String nome, 
+                                 @RequestParam String senha,
+                                 Model model) {
+    UsuarioService cs = context.getBean(UsuarioService.class);
+    Usuario usuario = cs.buscarPorNomeESenha(nome, senha);
+    
+    if (usuario != null) {
+        cs.deletarUsuario(usuario.getId());
+        return "redirect:/listagem?excluido=sucesso";
+    } else {
+        model.addAttribute("erro", "Nome ou senha incorretos!");
+        return "excluir";
+    }
+}
 }

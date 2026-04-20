@@ -35,3 +35,4 @@ build/
 .env
 *.log
 !.mvn/wrapper/maven-wrapper.jar
+application-local.yaml
