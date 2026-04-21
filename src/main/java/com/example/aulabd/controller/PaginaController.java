@@ -94,4 +94,44 @@ public String processarExclusao(@RequestParam String nome,
         return "excluir";
     }
 }
+
+@GetMapping("/editar")
+public String formEdicao(Model model) {
+    model.addAttribute("usuario", new Usuario());
+    return "editar";
+}
+
+@PostMapping("/editar")
+public String processarEdicao(@RequestParam String nome,
+                               @RequestParam String novaSenha,
+                               @RequestParam String confirmarSenha,
+                               Model model) {
+    UsuarioService cs = context.getBean(UsuarioService.class);
+    
+    Usuario usuario = cs.buscarPorNomeESenha(nome, novaSenha);
+    
+    if (usuario == null) {
+        model.addAttribute("erro", "Nome ou senha incorretos!");
+        return "editar";  // Fica na mesma página (editar.html)
+    }
+    
+    if (!novaSenha.equals(confirmarSenha)) {
+        model.addAttribute("erro", "As senhas não coincidem!");
+        return "editar";  // Fica na mesma página (editar.html)
+    }
+    
+    // VERIFICAÇÃO OK! Vai para página de novo nome
+    model.addAttribute("usuario", usuario);
+    model.addAttribute("nomeAtual", usuario.getNome());
+    return "novo-nome";
+}
+
+@PostMapping("/novo-nome")
+	public String salvarEdicaoNome(@RequestParam String id,
+									@RequestParam String novoNome,
+									Model model) {
+		UsuarioService cs = context.getBean(UsuarioService.class);
+		cs.atualizarNome(id, novoNome);
+		return "redirect:/listagem?editado=sucesso";
+	}
 }

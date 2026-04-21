@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Alterar Nome - GameHelp Forum</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <style>
+        .main-editar {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 70vh;
+        }
+        .card-editar {
+            background: white;
+            border-radius: 28px;
+            padding: 2.5rem;
+            box-shadow: 0 15px 35px rgba(23, 55, 90, 0.15);
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+        }
+        .info-box {
+            background: #e3eaf3;
+            padding: 1rem;
+            border-radius: 16px;
+            margin-bottom: 1.5rem;
+        }
+        .btn-salvar {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 1rem;
+            border-radius: 60px;
+            width: 100%;
+            font-weight: 600;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container header-container">
+            <h1 class="logo"><a th:href="@{/}">GameHelp Forum</a></h1>
+            <nav>
+                <ul class="nav-links">
+                    <li><a th:href="@{/}">Início</a></li>
+                    <li><a th:href="@{/nova-duvida}">Nova Dúvida</a></li>
+                    <li><a th:href="@{/listagem}">Listar Usuarios</a></li>
+                    <li><a th:href="@{/usuario}">Registrar</a></li>
+                    <li><a th:href="@{/editar}">Editar Conta</a></li>
+                    <li><a th:href="@{/excluir}">Excluir Conta</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container main-editar">
+        <div class="card-editar">
+            <h2>Alterar Nome de Usuário</h2>
+            
+            <div class="info-box">
+                <p>Nome atual: <strong th:text="${nomeAtual}"></strong></p>
+            </div>
+
+            <form th:action="@{/novo-nome}" method="post">
+                <input type="hidden" name="id" th:value="${usuario.id}">
+                
+                <div class="form-group">
+                    <label>Novo nome:</label>
+                    <input type="text" name="novoNome" required>
+                </div>
+
+                <button type="submit" class="btn-salvar">Salvar Alteração</button>
+                <a th:href="@{/listagem}" style="display: block; margin-top: 1rem;">Cancelar</a>
+            </form>
+        </div>
+    </main>
+</body>
+</html>

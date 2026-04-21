@@ -30,4 +30,8 @@ public class UsuarioService {
 public void deletarUsuario(String id) {
     usuarioDAO.deletar(id);
 }
+
+public void atualizarNome(String id, String novoNome) {
+    usuarioDAO.atualizarNome(id, novoNome);
+}
 }

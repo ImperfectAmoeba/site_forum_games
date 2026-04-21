@@ -63,4 +63,9 @@ public void deletar(String id) {
     String sql = "DELETE FROM usuario WHERE id = ?::uuid";
     jdbc.update(sql, id);
 }
+
+public void atualizarNome(String id, String novoNome) {
+    String sql = "UPDATE usuario SET nome = ? WHERE id = ?::uuid";
+    jdbc.update(sql, novoNome, id);
+}
 }
