@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -23,15 +23,41 @@
             max-width: 500px;
             text-align: center;
         }
+        .card-editar h2 {
+            color: #1e2b41;
+            margin-bottom: 1.5rem;
+        }
+        .info-box {
+            background: #e3eaf3;
+            padding: 1rem;
+            border-radius: 16px;
+            margin-bottom: 1.5rem;
+            text-align: left;
+        }
+        .info-box p {
+            margin: 0;
+            color: #1e3b5c;
+        }
         .form-group {
             text-align: left;
             margin-bottom: 1.5rem;
+        }
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            color: #1e2b41;
+            margin-bottom: 0.5rem;
         }
         .form-group input {
             width: 100%;
             padding: 1rem;
             border: 2px solid #dde3ed;
             border-radius: 50px;
+            font-size: 1rem;
+        }
+        .form-group input:focus {
+            outline: none;
+            border-color: #5f7eb3;
         }
         .btn-editar {
             width: 100%;
@@ -42,6 +68,10 @@
             border-radius: 60px;
             font-weight: 600;
             cursor: pointer;
+            font-size: 1.1rem;
+        }
+        .btn-editar:hover {
+            background-color: #2b4e77;
         }
         .erro-mensagem {
             background: #ffe6e6;
@@ -49,6 +79,10 @@
             padding: 0.8rem;
             border-radius: 50px;
             margin-bottom: 1rem;
+        }
+        .divisor {
+            margin: 1.5rem 0;
+            border-top: 1px dashed #cbd5e1;
         }
     </style>
 </head>
@@ -58,12 +92,20 @@
             <h1 class="logo"><a th:href="@{/}">GameHelp Forum</a></h1>
             <nav>
                 <ul class="nav-links">
+                    <li sec:authorize="isAuthenticated()" class="user-greeting">
+                        <span>Olá, <strong sec:authentication="name"></strong>!</span>
+                    </li>
                     <li><a th:href="@{/}">Início</a></li>
                     <li><a th:href="@{/nova-duvida}">Nova Dúvida</a></li>
-                    <li><a th:href="@{/listagem}">Listar Usuarios</a></li>
-                    <li><a th:href="@{/usuario}">Registrar</a></li>
-                    <li><a th:href="@{/editar}">Editar Conta</a></li>
-                    <li><a th:href="@{/excluir}">Excluir Conta</a></li>
+                    <li><a th:href="@{/listagem}">Usuários</a></li>
+                    <li sec:authorize="isAnonymous()"><a th:href="@{/login}">Entrar</a></li>
+                    <li sec:authorize="isAnonymous()"><a th:href="@{/usuario}">Registrar</a></li>
+                    <li sec:authorize="isAuthenticated()"><a th:href="@{/editar}">Editar Conta</a></li>
+                    <li sec:authorize="isAuthenticated()"><a th:href="@{/excluir}">Excluir Conta</a></li>
+                    <li sec:authorize="hasAuthority('admin')"><a th:href="@{/categoria/listar}">Categorias</a></li>
+                    <li sec:authorize="isAuthenticated()">
+                        <a th:href="@{/logout}" onclick="return confirm('Deseja sair?')">Sair</a>
+                    </li>
                 </ul>
             </nav>
         </div>
@@ -71,27 +113,33 @@
 
     <main class="container main-editar">
         <div class="card-editar">
-            <h2>Editar Conta</h2>
+            <h2>✏️ Editar Conta</h2>
             
+            <div class="info-box">
+                <p>Você está logado como: <strong th:text="${usuario.nome}"></strong></p>
+            </div>
+
             <form th:action="@{/editar}" method="post">
                 <div class="form-group">
-                    <label>Nome de usuário:</label>
-                    <input type="text" name="nome" required>
+                    <label>Novo nome (opcional):</label>
+                    <input type="text" name="novoNome" placeholder="Deixe em branco para manter o atual" th:value="${usuario.nome}">
+                </div>
+
+                <div class="divisor"></div>
+
+                <div class="form-group">
+                    <label>Nova senha (opcional):</label>
+                    <input type="password" name="novaSenha" placeholder="Digite a nova senha">
                 </div>
 
                 <div class="form-group">
-                    <label>Sua senha atual:</label>
-                    <input type="password" name="novaSenha" required>
-                </div>
-
-                <div class="form-group">
-                    <label>Confirmar senha:</label>
-                    <input type="password" name="confirmarSenha" required>
+                    <label>Confirmar nova senha:</label>
+                    <input type="password" name="confirmarSenha" placeholder="Confirme a nova senha">
                 </div>
 
                 <div th:if="${erro}" class="erro-mensagem" th:text="${erro}"></div>
 
-                <button type="submit" class="btn-editar">Verificar Identidade</button>
+                <button type="submit" class="btn-editar">Salvar Alterações</button>
             </form>
         </div>
     </main>

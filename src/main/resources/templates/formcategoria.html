@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nova Categoria - GameHelp Forum</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <style>
+        .main-categoria {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 70vh;
+            margin: 2rem auto;
+        }
+
+        .card-categoria {
+            background: white;
+            border-radius: 28px;
+            padding: 2.5rem;
+            box-shadow: 0 15px 35px rgba(23, 55, 90, 0.15);
+            border: 1px solid #d5e0f0;
+            width: 100%;
+            max-width: 500px;
+        }
+
+        .card-categoria h1 {
+            font-size: 2rem;
+            color: #1e2b41;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            color: #1e2b41;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-group input, .form-group textarea {
+            width: 100%;
+            padding: 0.9rem 1.2rem;
+            border: 2px solid #dde3ed;
+            border-radius: 20px;
+            font-size: 1rem;
+            transition: all 0.2s;
+            background-color: #fbfdff;
+            font-family: inherit;
+        }
+
+        .form-group input:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: #5f7eb3;
+            box-shadow: 0 0 0 3px rgba(83, 121, 186, 0.15);
+        }
+
+        .btn-submit {
+            width: 100%;
+            background-color: #1e3b5c;
+            color: white;
+            border: none;
+            padding: 1rem;
+            border-radius: 60px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .btn-submit:hover {
+            background-color: #2b4e77;
+            transform: scale(1.02);
+        }
+
+        .links {
+            text-align: center;
+            margin-top: 1.5rem;
+        }
+
+        .links a {
+            color: #3b4e7a;
+            text-decoration: none;
+            margin: 0 0.5rem;
+        }
+
+        .links a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container header-container">
+            <h1 class="logo"><a th:href="@{/}">🎮 GameHelp Forum</a></h1>
+            <nav>
+    <ul class="nav-links">
+        <!-- Links comuns para todos -->
+        <li sec:authorize="isAuthenticated()" class="user-greeting">
+            <span>Olá, <strong sec:authentication="name"></strong>!</span>
+        </li>
+        <li><a th:href="@{/}">Início</a></li>
+        <li><a th:href="@{/nova-duvida}">Nova Dúvida</a></li>
+        <li><a th:href="@{/listagem}">Usuários</a></li>
+
+        <!-- ===== USUÁRIO NÃO LOGADO ===== -->
+        <li sec:authorize="isAnonymous()"><a th:href="@{/login}">Entrar</a></li>
+        <li sec:authorize="isAnonymous()"><a th:href="@{/usuario}">Registrar</a></li>
+
+        <!-- ===== USUÁRIO LOGADO (COMUM) ===== -->
+        <li sec:authorize="isAuthenticated()"><a th:href="@{/editar}">Editar Conta</a></li>
+        <li sec:authorize="isAuthenticated()"><a th:href="@{/excluir}">Excluir Conta</a></li>
+
+        <!-- ===== MODERADOR (cargo 'mod') ===== -->
+        <li sec:authorize="hasAuthority('mod')"><a th:href="@{/moderador/pendentes}">Moderação</a></li>
+
+        <!-- ===== ADMIN (cargo 'admin') ===== -->
+        <li sec:authorize="hasAuthority('admin')"><a th:href="@{/categoria/listar}">Categorias</a></li>
+
+        <!-- ===== SAIR (para todos logados) ===== -->
+        <li sec:authorize="isAuthenticated()">
+            <a th:href="@{/logout}" class="logout-btn" onclick="return confirm('Deseja sair?')">Sair</a>
+        </li>
+    </ul>
+</nav>
+        </div>
+    </header>
+
+    <main class="container main-categoria">
+        <div class="card-categoria">
+            <h1>📂 Nova Categoria</h1>
+            <form th:action="@{/categoria/cadastrar}" method="post" th:object="${categoria}">
+                <div class="form-group">
+                    <label>Nome do jogo:</label>
+                    <input type="text" th:field="*{nome}" placeholder="Ex: Elden Ring, Stardew Valley..." required>
+                </div>
+                <div class="form-group">
+                    <label>Descrição:</label>
+                    <textarea th:field="*{descricao}" rows="4" placeholder="Descreva o que essa categoria abrange..."></textarea>
+                </div>
+                <button type="submit" class="btn-submit">Criar Categoria</button>
+            </form>
+            <div class="links">
+                <a th:href="@{/categoria/listar}">Listar categorias</a> |
+                <a th:href="@{/}">Voltar ao início</a>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container footer-content">
+            <p>GameHelp Forum · projeto acadêmico</p>
+            <p>Programação para Servidores II</p>
+        </div>
+    </footer>
+</body>
+</html>

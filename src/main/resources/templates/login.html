@@ -1,12 +1,12 @@
-<!DOCTYPE HTML>
+<!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registro</title>
-    <link rel="stylesheet" th:href="@{css/style.css}">
+    <title>Login - GameHelp Forum</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
     <style>
-        /* Estilos adicionais específicos para a página de login */
+        /* Estilos específicos para a página de login */
         .main-login {
             display: flex;
             justify-content: center;
@@ -31,31 +31,30 @@
         }
 
         .login-header h2 {
-            font-size: 2.2rem;
+            font-size: 2rem;
             color: #1e2b41;
             margin-bottom: 0.5rem;
         }
 
         .login-header p {
             color: #5b687c;
-            font-size: 1rem;
+            font-size: 0.95rem;
         }
 
-        .login-form .form-group {
-            margin-bottom: 1.8rem;
+        .form-group {
+            margin-bottom: 1.5rem;
         }
 
-        .login-form label {
+        .form-group label {
             display: block;
             font-weight: 600;
             color: #1e2b41;
             margin-bottom: 0.5rem;
-            font-size: 1rem;
         }
 
-        .login-form input {
+        .form-group input {
             width: 100%;
-            padding: 1rem 1.2rem;
+            padding: 0.9rem 1.2rem;
             border: 2px solid #dde3ed;
             border-radius: 50px;
             font-size: 1rem;
@@ -63,69 +62,37 @@
             background-color: #fbfdff;
         }
 
-        .login-form input:focus {
+        .form-group input:focus {
             outline: none;
             border-color: #5f7eb3;
             box-shadow: 0 0 0 3px rgba(83, 121, 186, 0.15);
         }
 
-        .login-options {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin: 1.5rem 0 2rem;
-            font-size: 0.95rem;
-        }
-
-        .remember-checkbox {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .remember-checkbox input {
-            width: auto;
-            accent-color: #1e3b5c;
-        }
-
-        .forgot-password {
-            color: #3b4e7a;
-            text-decoration: none;
-            font-weight: 500;
-        }
-
-        .forgot-password:hover {
-            text-decoration: underline;
-            color: #1f2b44;
-        }
-
         .btn-login {
             width: 100%;
             background-color: #1e3b5c;
-            color: #1e3b5c;
+            color: white;
             border: none;
-            padding: 1rem;
+            padding: 0.9rem;
             border-radius: 60px;
             font-weight: 600;
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             cursor: pointer;
             transition: 0.2s;
-            border: 2px solid transparent;
-            margin-bottom: 1.5rem;
-            box-shadow: 0 5px 12px rgba(23, 55, 90, 0.3);
+            margin-top: 0.5rem;
         }
 
         .btn-login:hover {
-            background-color: #ffffff;
-            color: black;
+            background-color: #2b4e77;
             transform: scale(1.02);
         }
 
         .register-prompt {
             text-align: center;
-            color: #5b687c;
-            border-top: 1px solid #dde3ed;
+            margin-top: 1.8rem;
             padding-top: 1.5rem;
+            border-top: 1px solid #e2e8f0;
+            color: #5b687c;
         }
 
         .register-prompt a {
@@ -138,43 +105,31 @@
             text-decoration: underline;
         }
 
-        .login-footer-links {
-            display: flex;
-            justify-content: center;
-            gap: 1.5rem;
-            margin-top: 1.5rem;
-            font-size: 0.9rem;
-        }
-
-        .login-footer-links a {
-            color: #7a889c;
-            text-decoration: none;
-        }
-
-        .login-footer-links a:hover {
-            color: #1e2b41;
-        }
-
-        /* Mensagem de erro/sucesso (estática) */
-        .login-message {
-            background: #f8fafd;
+        .error-message {
+            background-color: #fee2e2;
+            color: #b91c1c;
+            padding: 0.75rem;
             border-radius: 50px;
-            padding: 0.8rem;
-            margin-bottom: 1.5rem;
             text-align: center;
-            font-size: 0.95rem;
-            border: 1px solid #dde3ed;
-            color: #5b687c;
+            margin-bottom: 1.5rem;
+            font-size: 0.9rem;
+            border: 1px solid #fecaca;
         }
 
-        .login-message.info {
-            background: #e3eaf3;
-            color: #1e3b5c;
-            border-color: #b3c7e5;
+        .logout-message {
+            background-color: #dcfce7;
+            color: #166534;
+            padding: 0.75rem;
+            border-radius: 50px;
+            text-align: center;
+            margin-bottom: 1.5rem;
+            font-size: 0.9rem;
+            border: 1px solid #bbf7d0;
         }
     </style>
 </head>
 <body>
+
     <header>
         <div class="container header-container">
             <h1 class="logo"><a th:href="@{/}">GameHelp Forum</a></h1>
@@ -214,36 +169,43 @@
     <main class="container main-login">
         <div class="card-login">
             <div class="login-header">
-                <h2>Bem-vindo!</h2>
-                <p>Entre com seus dados para continuar</p>
+                <h2>🔐 Acesse sua conta</h2>
+                <p>Entre com seu apelido e senha</p>
             </div>
 
-            <form class="login-form" id="loginForm" action="#" th:action="@{/usuario}" method="post" th:object="${usuario}">
+            <!-- Mensagem de erro, se houver -->
+            <div th:if="${errorMsg}" class="error-message" th:text="${errorMsg}"></div>
+
+            <!-- Mensagem de logout, se houver -->
+            <div th:if="${logoutMsg}" class="logout-message" th:text="${logoutMsg}"></div>
+
+            <!-- Formulário de login do Spring Security -->
+            <form th:action="@{/login}" method="post">
                 <div class="form-group">
-                    <label for="apelido">Apelido</label>
-                    <input type="text" id="apelido" name="apelido" placeholder="Seu nickname" required th:field="*{nome}">
+                    <label for="username">Apelido</label>
+                    <input type="text" id="username" name="username" placeholder="Seu apelido" required autofocus>
                 </div>
 
                 <div class="form-group">
-                    <label for="email">Email</label>
-                    <input type="email" id="email" name="email" placeholder="Digite aqui seu email" required th:field="*{email}">
+                    <label for="password">Senha</label>
+                    <input type="password" id="password" name="password" placeholder="••••••••" required>
                 </div>
 
-                <div class="form-group">
-                    <label for="senha">Senha</label>
-                    <input type="password" id="senha" name="senha" placeholder="••••••••" required th:field="*{senha}">
-                </div>
-
-                <input type="submit" value="Cadastrar" class="btn-login">
+                <button type="submit" class="btn-login">Entrar</button>
             </form>
+
+            <div class="register-prompt">
+                Ainda não tem uma conta? <a th:href="@{/usuario}">Cadastre-se</a>
+            </div>
         </div>
     </main>
 
     <footer>
         <div class="container footer-content">
-            <p>Fórum de Dicas · projeto acadêmico</p>
+            <p>GameHelp Forum · projeto acadêmico</p>
             <p>Programação para Servidores II</p>
         </div>
     </footer>
+
 </body>
 </html>

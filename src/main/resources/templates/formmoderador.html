@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Novo Moderador - GameHelp Forum</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <style>
+        .main-moderador {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 70vh;
+            margin: 2rem auto;
+        }
+
+        .card-moderador {
+            background: white;
+            border-radius: 28px;
+            padding: 2.5rem;
+            box-shadow: 0 15px 35px rgba(23, 55, 90, 0.15);
+            border: 1px solid #d5e0f0;
+            width: 100%;
+            max-width: 500px;
+        }
+
+        .card-moderador h1 {
+            font-size: 2rem;
+            color: #1e2b41;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            color: #1e2b41;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-group select {
+            width: 100%;
+            padding: 0.9rem 1.2rem;
+            border: 2px solid #dde3ed;
+            border-radius: 20px;
+            font-size: 1rem;
+            background-color: #fbfdff;
+        }
+
+        .btn-submit {
+            width: 100%;
+            background-color: #1e3b5c;
+            color: white;
+            border: none;
+            padding: 1rem;
+            border-radius: 60px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .btn-submit:hover {
+            background-color: #2b4e77;
+            transform: scale(1.02);
+        }
+
+        .links {
+            text-align: center;
+            margin-top: 1.5rem;
+        }
+
+        .links a {
+            color: #3b4e7a;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container header-container">
+            <h1 class="logo"><a th:href="@{/}">🎮 GameHelp Forum</a></h1>
+            <nav>
+    <ul class="nav-links">
+        <!-- Links comuns para todos -->
+        <li sec:authorize="isAuthenticated()" class="user-greeting">
+            <span>Olá, <strong sec:authentication="name"></strong>!</span>
+        </li>
+        <li><a th:href="@{/}">Início</a></li>
+        <li><a th:href="@{/nova-duvida}">Nova Dúvida</a></li>
+        <li><a th:href="@{/listagem}">Usuários</a></li>
+
+        <!-- ===== USUÁRIO NÃO LOGADO ===== -->
+        <li sec:authorize="isAnonymous()"><a th:href="@{/login}">Entrar</a></li>
+        <li sec:authorize="isAnonymous()"><a th:href="@{/usuario}">Registrar</a></li>
+
+        <!-- ===== USUÁRIO LOGADO (COMUM) ===== -->
+        <li sec:authorize="isAuthenticated()"><a th:href="@{/editar}">Editar Conta</a></li>
+        <li sec:authorize="isAuthenticated()"><a th:href="@{/excluir}">Excluir Conta</a></li>
+
+        <!-- ===== MODERADOR (cargo 'mod') ===== -->
+        <li sec:authorize="hasAuthority('mod')"><a th:href="@{/moderador/pendentes}">Moderação</a></li>
+
+        <!-- ===== ADMIN (cargo 'admin') ===== -->
+        <li sec:authorize="hasAuthority('admin')"><a th:href="@{/categoria/listar}">Categorias</a></li>
+
+        <!-- ===== SAIR (para todos logados) ===== -->
+        <li sec:authorize="isAuthenticated()">
+            <a th:href="@{/logout}" class="logout-btn" onclick="return confirm('Deseja sair?')">Sair</a>
+        </li>
+    </ul>
+</nav>
+        </div>
+    </header>
+
+    <main class="container main-moderador">
+        <div class="card-moderador">
+            <h1>👑 Novo Moderador</h1>
+            <form th:action="@{/moderador/cadastrar}" method="post">
+                <div class="form-group">
+                    <label>Selecione o usuário:</label>
+                    <select name="usuarioId" required>
+                        <option value="">-- Selecione --</option>
+                        <option th:each="user : ${usuarios}" th:value="${user.id}" th:text="${user.nome}"></option>
+                    </select>
+                </div>
+                <button type="submit" class="btn-submit">Tornar Moderador</button>
+            </form>
+            <div class="links">
+                <a th:href="@{/moderador/listar}">Listar moderadores</a> |
+                <a th:href="@{/}">Voltar</a>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container footer-content">
+            <p>GameHelp Forum · projeto acadêmico</p>
+            <p>Programação para Servidores II</p>
+        </div>
+    </footer>
+</body>
+</html>

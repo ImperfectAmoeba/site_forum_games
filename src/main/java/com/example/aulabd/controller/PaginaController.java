@@ -1,10 +1,13 @@
-
 package com.example.aulabd.controller;
 
 import java.util.ArrayList;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,9 +19,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.example.aulabd.model.Usuario;
 import com.example.aulabd.model.UsuarioService;
 
-
-
-
+import jakarta.servlet.http.HttpServletRequest;
 
 @Controller
 public class PaginaController {
@@ -31,107 +32,172 @@ public class PaginaController {
         return "index";
     }
 
-	@GetMapping("/nova-duvida")
-	public String nova_duvida(){
-		return "nova-duvida";
-	}
+    @GetMapping("/nova-duvida")
+    public String nova_duvida(){
+        return "nova-duvida";
+    }
 
-	@GetMapping("/detalhes-duvida")
+    @GetMapping("/detalhes-duvida")
     public String detalhes_duvida(){
         return "detalhes-duvida";
     }
-	
-	@GetMapping("/perfil/{uuid}")
-	public String verPerfil(@PathVariable String uuid, Model model){
-		UsuarioService cs = context.getBean(UsuarioService.class);
-		Usuario aluno = cs.mostrarUsuario(uuid);
-		model.addAttribute("nomeUsuario",aluno.getNome());
-		model.addAttribute("idUsuario",aluno.getId());
-		model.addAttribute("emailUsuario",aluno.getEmail());
-		model.addAttribute("senhaUsuario",aluno.getSenha());
-		return "paginaaluno";
-	}
+    
+    @GetMapping("/perfil/{uuid}")
+    public String verPerfil(@PathVariable String uuid, Model model){
+        UsuarioService cs = context.getBean(UsuarioService.class);
+        Usuario aluno = cs.mostrarUsuario(uuid);
+        model.addAttribute("nomeUsuario",aluno.getNome());
+        model.addAttribute("idUsuario",aluno.getId());
+        model.addAttribute("emailUsuario",aluno.getEmail());
+        model.addAttribute("senhaUsuario",aluno.getSenha());
+        return "paginaaluno";
+    }
 
-	@GetMapping("/listagem")
-public String listar_usuarios(Model model){
-    UsuarioService cs = context.getBean(UsuarioService.class);
-    ArrayList<Usuario> usuarios = (ArrayList<Usuario>) cs.listar_usuarios();
-    model.addAttribute("usuarios", usuarios);
-    return "listagem";
-}
-	
-	@GetMapping("/usuario")
-	public String formRegistro(Model model) {
-		model.addAttribute("usuario", new Usuario());
-		return "formusuario";
-	}
+    @GetMapping("/listagem")
+    public String listar_usuarios(Model model){
+        UsuarioService cs = context.getBean(UsuarioService.class);
+        ArrayList<Usuario> usuarios = (ArrayList<Usuario>) cs.listar_usuarios();
+        model.addAttribute("usuarios", usuarios);
+        return "listagem";
+    }
+    
+    @GetMapping("/usuario")
+    public String formRegistro(Model model) {
+        model.addAttribute("usuario", new Usuario());
+        return "formusuario";
+    }
 
-	@PostMapping("/usuario")
-	public String postCliente(@ModelAttribute Usuario usuario, Model model) {
-		UsuarioService cs = context.getBean(UsuarioService.class);
-		cs.inserirUsuario(usuario);
-		return "sucesso";
-	}
+    @PostMapping("/usuario")
+    public String postCliente(@ModelAttribute Usuario usuario, Model model) {
+        UsuarioService cs = context.getBean(UsuarioService.class);
+        
+        // Criptografa a senha
+        PasswordEncoder encoder = context.getBean(PasswordEncoder.class);
+        String senhaCriptografada = encoder.encode(usuario.getSenha());
+        usuario.setSenha(senhaCriptografada);
+        
+        // Insere o usuário
+        cs.inserirUsuario(usuario);
+        
+        // Busca o ID do usuário recém-criado pelo nome (não pela senha)
+        Usuario novoUsuario = cs.buscarPorNome(usuario.getNome());
+        
+        if (novoUsuario != null) {
+            cs.inserirPerfil(novoUsuario.getId(), "user");
+        }
+        
+        return "sucesso";
+    }
 
-	@GetMapping("/excluir")
+    @GetMapping("/excluir")
 public String formExclusao(Model model) {
-    model.addAttribute("usuario", new Usuario());
+    // Pega o usuário logado
+    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+    String nomeLogado = auth.getName();
+    
+    UsuarioService cs = context.getBean(UsuarioService.class);
+    Usuario usuario = cs.buscarPorNome(nomeLogado);
+    
+    model.addAttribute("usuario", usuario);
     return "excluir";
 }
 
-	@PostMapping("/excluir")
-public String processarExclusao(@RequestParam String nome, 
-                                 @RequestParam String senha,
-                                 Model model) {
-    UsuarioService cs = context.getBean(UsuarioService.class);
-    Usuario usuario = cs.buscarPorNomeESenha(nome, senha);
+   @PostMapping("/excluir")
+public String processarExclusao(@RequestParam String senha, Model model, HttpServletRequest request) {
+    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+    String nomeLogado = auth.getName();
     
-    if (usuario != null) {
+    UsuarioService cs = context.getBean(UsuarioService.class);
+    Usuario usuario = cs.buscarPorNome(nomeLogado);
+    
+    if (usuario == null) {
+        return "redirect:/login";
+    }
+    
+    PasswordEncoder encoder = context.getBean(PasswordEncoder.class);
+    
+    if (encoder.matches(senha, usuario.getSenha())) {
         cs.deletarUsuario(usuario.getId());
-        return "redirect:/listagem?excluido=sucesso";
+        
+        // INVALIDA A SESSÃO COMPLETAMENTE
+        SecurityContextHolder.clearContext();
+        request.getSession().invalidate();
+        
+        return "redirect:/login?excluido=sucesso";
     } else {
-        model.addAttribute("erro", "Nome ou senha incorretos!");
+        model.addAttribute("erro", "Senha incorreta!");
+        model.addAttribute("usuario", usuario);
         return "excluir";
     }
 }
 
-@GetMapping("/editar")
+    @GetMapping("/editar")
 public String formEdicao(Model model) {
-    model.addAttribute("usuario", new Usuario());
+    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+    String nomeLogado = auth.getName();
+    
+    UsuarioService cs = context.getBean(UsuarioService.class);
+    Usuario usuario = cs.buscarPorNome(nomeLogado);
+    
+    if (usuario == null) {
+        // Se não encontrar, redireciona para login
+        return "redirect:/login";
+    }
+    
+    model.addAttribute("usuario", usuario);
     return "editar";
 }
 
-@PostMapping("/editar")
-public String processarEdicao(@RequestParam String nome,
-                               @RequestParam String novaSenha,
-                               @RequestParam String confirmarSenha,
+    @PostMapping("/editar")
+public String processarEdicao(@RequestParam(required = false) String novoNome,
+                               @RequestParam(required = false) String novaSenha,
+                               @RequestParam(required = false) String confirmarSenha,
                                Model model) {
-    UsuarioService cs = context.getBean(UsuarioService.class);
+    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+    String nomeLogado = auth.getName();
     
-    Usuario usuario = cs.buscarPorNomeESenha(nome, novaSenha);
+    UsuarioService cs = context.getBean(UsuarioService.class);
+    Usuario usuario = cs.buscarPorNome(nomeLogado);
     
     if (usuario == null) {
-        model.addAttribute("erro", "Nome ou senha incorretos!");
-        return "editar";  // Fica na mesma página (editar.html)
+        model.addAttribute("erro", "Usuário não encontrado!");
+        model.addAttribute("usuario", new Usuario());
+        return "editar";
     }
     
-    if (!novaSenha.equals(confirmarSenha)) {
-        model.addAttribute("erro", "As senhas não coincidem!");
-        return "editar";  // Fica na mesma página (editar.html)
+    boolean nomeAlterado = false;
+    
+    // Atualiza nome se foi enviado
+    if (novoNome != null && !novoNome.trim().isEmpty() && !novoNome.equals(usuario.getNome())) {
+        cs.atualizarNome(usuario.getId(), novoNome);
+        nomeAlterado = true;
     }
     
-    // VERIFICAÇÃO OK! Vai para página de novo nome
-    model.addAttribute("usuario", usuario);
-    model.addAttribute("nomeAtual", usuario.getNome());
-    return "novo-nome";
+    // Atualiza senha se foi enviada e as senhas coincidem
+    if (novaSenha != null && !novaSenha.trim().isEmpty()) {
+        if (novaSenha.equals(confirmarSenha)) {
+            PasswordEncoder encoder = context.getBean(PasswordEncoder.class);
+            String senhaCriptografada = encoder.encode(novaSenha);
+            cs.atualizarSenha(usuario.getId(), senhaCriptografada);
+        } else {
+            model.addAttribute("erro", "As senhas não coincidem!");
+            model.addAttribute("usuario", usuario);
+            return "editar";
+        }
+    }
+    
+    // SE O NOME FOI ALTERADO, ATUALIZA A SESSÃO
+    if (nomeAlterado) {
+        Usuario usuarioAtualizado = cs.buscarPorNome(novoNome);
+        
+        UsernamePasswordAuthenticationToken newAuth = new UsernamePasswordAuthenticationToken(
+            usuarioAtualizado.getNome(),
+            auth.getCredentials(),
+            auth.getAuthorities()
+        );
+        SecurityContextHolder.getContext().setAuthentication(newAuth);
+    }
+    
+    return "redirect:/?editado=sucesso";
 }
-
-@PostMapping("/novo-nome")
-	public String salvarEdicaoNome(@RequestParam String id,
-									@RequestParam String novoNome,
-									Model model) {
-		UsuarioService cs = context.getBean(UsuarioService.class);
-		cs.atualizarNome(id, novoNome);
-		return "redirect:/listagem?editado=sucesso";
-	}
 }

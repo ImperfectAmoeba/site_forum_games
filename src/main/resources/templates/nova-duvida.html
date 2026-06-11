@@ -11,15 +11,35 @@
         <div class="container header-container">
             <h1 class="logo"><a th:href="@{/}">GameHelp Forum</a></h1>
             <nav>
-                <ul class="nav-links">
-                    <li><a th:href="@{/}">Início</a></li>
-                    <li><a th:href="@{/nova-duvida}">Nova Dúvida</a></li>
-                    <li><a th:href="@{/listagem}">Listar Usuarios</a></li>
-                    <li><a th:href="@{/usuario}">Registrar</a></li>
-                    <li><a th:href="@{/editar}">Editar Conta</a></li>
-                    <li><a th:href="@{/excluir}">Excluir Conta</a></li>
-                </ul>
-            </nav>
+    <ul class="nav-links">
+        <!-- Links comuns para todos -->
+        <li sec:authorize="isAuthenticated()" class="user-greeting">
+            <span>Olá, <strong sec:authentication="name"></strong>!</span>
+        </li>
+        <li><a th:href="@{/}">Início</a></li>
+        <li><a th:href="@{/nova-duvida}">Nova Dúvida</a></li>
+        <li><a th:href="@{/listagem}">Usuários</a></li>
+
+        <!-- ===== USUÁRIO NÃO LOGADO ===== -->
+        <li sec:authorize="isAnonymous()"><a th:href="@{/login}">Entrar</a></li>
+        <li sec:authorize="isAnonymous()"><a th:href="@{/usuario}">Registrar</a></li>
+
+        <!-- ===== USUÁRIO LOGADO (COMUM) ===== -->
+        <li sec:authorize="isAuthenticated()"><a th:href="@{/editar}">Editar Conta</a></li>
+        <li sec:authorize="isAuthenticated()"><a th:href="@{/excluir}">Excluir Conta</a></li>
+
+        <!-- ===== MODERADOR (cargo 'mod') ===== -->
+        <li sec:authorize="hasAuthority('mod')"><a th:href="@{/moderador/pendentes}">Moderação</a></li>
+
+        <!-- ===== ADMIN (cargo 'admin') ===== -->
+        <li sec:authorize="hasAuthority('admin')"><a th:href="@{/categoria/listar}">Categorias</a></li>
+
+        <!-- ===== SAIR (para todos logados) ===== -->
+        <li sec:authorize="isAuthenticated()">
+            <a th:href="@{/logout}" class="logout-btn" onclick="return confirm('Deseja sair?')">Sair</a>
+        </li>
+    </ul>
+</nav>
         </div>
     </header>
 

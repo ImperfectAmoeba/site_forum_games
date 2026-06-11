@@ -394,3 +394,29 @@ footer {
         gap: 1rem;
     }
 }
+
+/* ===== HEADER MELHORADO ===== */
+.user-greeting span {
+    background-color: #e3eaf3;
+    padding: 0.3rem 1rem;
+    border-radius: 40px;
+    color: #1e3b5c;
+    font-weight: 500;
+}
+
+.logout-btn {
+    color: #dc3545 !important;
+}
+
+.logout-btn:hover {
+    color: #a71d2a !important;
+    border-bottom-color: #dc3545 !important;
+}
+
+.nav-links li a, .nav-links li span {
+    transition: all 0.2s ease;
+}
+
+.nav-links a::before {
+    content: none !important;
+}
