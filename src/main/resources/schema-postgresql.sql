@@ -25,11 +25,3 @@ CREATE TABLE IF NOT EXISTS post (
     autor_id UUID REFERENCES usuario(id) ON DELETE CASCADE,
     data_criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
-
-CREATE TABLE IF NOT EXISTS categoria_moderador (
-    categoria_id UUID REFERENCES categoria(id) ON DELETE CASCADE,
-    moderador_id UUID REFERENCES usuario(id) ON DELETE CASCADE,
-    PRIMARY KEY (categoria_id, moderador_id)
-);
-
-DROP TABLE IF EXISTS categoria_moderador;
