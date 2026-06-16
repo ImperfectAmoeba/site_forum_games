@@ -1,45 +1,152 @@
 <!DOCTYPE html>
-<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nova Dúvida</title>
-    <link rel="stylesheet" th:href="@{css/style.css}">
+    <title>Nova Dúvida - GameHelp Forum</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <style>
+        .main-nova-duvida {
+            display: block;
+            max-width: 800px;
+            margin: 2rem auto;
+        }
+
+        .form-section h2 {
+            font-size: 2rem;
+            color: #1f2b40;
+            margin-bottom: 0.3rem;
+        }
+
+        .subtitulo-form {
+            color: #4a5a74;
+            margin-bottom: 2rem;
+            font-size: 1.15rem;
+        }
+
+        .form-duvida {
+            background: white;
+            border-radius: 28px;
+            padding: 2.2rem;
+            box-shadow: 0 12px 30px rgba(0,20,50,0.08);
+            border: 1px solid #d5e0f0;
+        }
+
+        .form-group {
+            margin-bottom: 2rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            color: #1e2b41;
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+        }
+
+        .form-group input[type="text"],
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.9rem 1.2rem;
+            border: 2px solid #dde3ed;
+            border-radius: 20px;
+            font-size: 1rem;
+            font-family: inherit;
+            transition: border 0.2s, box-shadow 0.2s;
+            background-color: #fbfdff;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #5f7eb3;
+            box-shadow: 0 0 0 3px rgba(83, 121, 186, 0.15);
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 1.2rem;
+            flex-wrap: wrap;
+            margin: 2.5rem 0 1.5rem;
+        }
+
+        .btn-submit, .btn-reset {
+            border: none;
+            padding: 1rem 2.5rem;
+            border-radius: 60px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: 0.2s;
+            border: 2px solid transparent;
+        }
+
+        .btn-submit {
+            background-color: #1e3b5c;
+            color: white;
+            box-shadow: 0 5px 12px rgba(23, 55, 90, 0.3);
+        }
+
+        .btn-submit:hover {
+            background-color: #2b4e77;
+            transform: scale(1.02);
+        }
+
+        .btn-reset {
+            background-color: #e9eef5;
+            color: #1e2b41;
+            border-color: #c0cee2;
+        }
+
+        .btn-reset:hover {
+            background-color: #d7e0ec;
+        }
+
+        .feedback {
+            padding: 1rem;
+            border-radius: 50px;
+            font-weight: 500;
+            text-align: center;
+        }
+
+        .feedback.sucesso {
+            background: #e2f0da;
+            color: #1d5820;
+            border: 1px solid #98c0a0;
+        }
+
+        .feedback.erro {
+            background: #ffe6e6;
+            color: #a13030;
+            border: 1px solid #fbbaba;
+        }
+    </style>
 </head>
 <body>
     <header>
         <div class="container header-container">
             <h1 class="logo"><a th:href="@{/}">GameHelp Forum</a></h1>
             <nav>
-    <ul class="nav-links">
-        <!-- Links comuns para todos -->
-        <li sec:authorize="isAuthenticated()" class="user-greeting">
-            <span>Olá, <strong sec:authentication="name"></strong>!</span>
-        </li>
-        <li><a th:href="@{/}">Início</a></li>
-        <li><a th:href="@{/nova-duvida}">Nova Dúvida</a></li>
-        <li><a th:href="@{/listagem}">Usuários</a></li>
-
-        <!-- ===== USUÁRIO NÃO LOGADO ===== -->
-        <li sec:authorize="isAnonymous()"><a th:href="@{/login}">Entrar</a></li>
-        <li sec:authorize="isAnonymous()"><a th:href="@{/usuario}">Registrar</a></li>
-
-        <!-- ===== USUÁRIO LOGADO (COMUM) ===== -->
-        <li sec:authorize="isAuthenticated()"><a th:href="@{/editar}">Editar Conta</a></li>
-        <li sec:authorize="isAuthenticated()"><a th:href="@{/excluir}">Excluir Conta</a></li>
-
-        <!-- ===== MODERADOR (cargo 'mod') ===== -->
-        <li sec:authorize="hasAuthority('mod')"><a th:href="@{/moderador/pendentes}">Moderação</a></li>
-
-        <!-- ===== ADMIN (cargo 'admin') ===== -->
-        <li sec:authorize="hasAuthority('admin')"><a th:href="@{/categoria/listar}">Categorias</a></li>
-
-        <!-- ===== SAIR (para todos logados) ===== -->
-        <li sec:authorize="isAuthenticated()">
-            <a th:href="@{/logout}" class="logout-btn" onclick="return confirm('Deseja sair?')">Sair</a>
-        </li>
-    </ul>
-</nav>
+                <ul class="nav-links">
+                    <li sec:authorize="isAuthenticated()" class="user-greeting">
+                        <span>Olá, <strong sec:authentication="name"></strong>!</span>
+                    </li>
+                    <li><a th:href="@{/}">Início</a></li>
+                    <li><a th:href="@{/nova-duvida}">Nova Dúvida</a></li>
+                    <li><a th:href="@{/listagem}">Usuários</a></li>
+                    <li sec:authorize="isAnonymous()"><a th:href="@{/login}">Entrar</a></li>
+                    <li sec:authorize="isAnonymous()"><a th:href="@{/usuario}">Registrar</a></li>
+                    <li sec:authorize="isAuthenticated()"><a th:href="@{/editar}">Editar Conta</a></li>
+                    <li sec:authorize="isAuthenticated()"><a th:href="@{/excluir}">Excluir Conta</a></li>
+                    <li sec:authorize="hasAuthority('mod')"><a th:href="@{/moderador/pendentes}">Moderação</a></li>
+                    <li sec:authorize="hasAuthority('admin')"><a th:href="@{/categoria/listar}">Categorias</a></li>
+                    <li sec:authorize="isAuthenticated()">
+                        <a th:href="@{/logout}" onclick="return confirm('Deseja sair?')">Sair</a>
+                    </li>
+                </ul>
+            </nav>
         </div>
     </header>
 
@@ -48,25 +155,23 @@
             <h2>Compartilhe sua dúvida ou discussão</h2>
             <p class="subtitulo-form">Preencha os campos abaixo. Lembre-se de mencionar o jogo e evitar spoilers.</p>
 
-            <form id="form-nova-duvida" class="form-duvida">
+            <form id="form-nova-duvida" class="form-duvida" th:action="@{/post/criar}" method="post" th:object="${post}">
                 <div class="form-group">
                     <label for="titulo">Título da discussão *</label>
-                    <input type="text" id="titulo" name="titulo" placeholder="ex: Dúvida sobre chefão final em Sekiro" required>
+                    <input type="text" id="titulo" name="titulo" placeholder="ex: Dúvida sobre chefão final em Sekiro" required th:field="*{titulo}">
                 </div>
 
                 <div class="form-group">
-                    <label for="jogo">Jogo relacionado *</label>
-                    <input type="text" id="jogo" name="jogo" placeholder="ex: Elden Ring, The Witcher 3..." required>
+                    <label for="categoriaId">Categoria (jogo) *</label>
+                    <select id="categoriaId" name="categoriaId" required>
+                        <option value="">Selecione um jogo</option>
+                        <option th:each="cat : ${categorias}" th:value="${cat.id}" th:text="${cat.nome}"></option>
+                    </select>
                 </div>
 
                 <div class="form-group">
-                    <label for="mensagem">Descreva sua dúvida ou ponto de discussão *</label>
-                    <textarea id="mensagem" name="mensagem" rows="6" placeholder="Detalhe ao máximo para que outros jogadores possam te ajudar..." required></textarea>
-                </div>
-
-                <div class="form-group checkbox-group">
-                    <input type="checkbox" id="spoiler" name="spoiler">
-                    <label for="spoiler">Este post contém spoiler</label>
+                    <label for="conteudo">Descreva sua dúvida ou ponto de discussão *</label>
+                    <textarea id="conteudo" name="conteudo" rows="6" placeholder="Detalhe ao máximo para que outros jogadores possam te ajudar..." required th:field="*{conteudo}"></textarea>
                 </div>
 
                 <div class="form-actions">
@@ -74,19 +179,18 @@
                     <button type="reset" class="btn-reset">Limpar campos</button>
                 </div>
 
-                <div id="feedback-mensagem" class="feedback"></div>
+                <div th:if="${erro}" class="feedback erro" th:text="${erro}"></div>
             </form>
-
         </section>
     </main>
 
     <footer>
         <div class="container footer-content">
-            <p>Fórum de Dicas · projeto acadêmico</p>
+            <p>GameHelp Forum · projeto acadêmico</p>
             <p>Programação para Servidores II</p>
         </div>
     </footer>
 
-    <script th:src="@{js/index.js}"></script>
+    <script th:src="@{/js/index.js}"></script>
 </body>
 </html>

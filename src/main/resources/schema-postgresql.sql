@@ -23,5 +23,22 @@ CREATE TABLE IF NOT EXISTS post (
     conteudo TEXT NOT NULL,
     categoria_id UUID REFERENCES categoria(id) ON DELETE CASCADE,
     autor_id UUID REFERENCES usuario(id) ON DELETE CASCADE,
-    data_criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    data_criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    data_atualizacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS comentario (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    conteudo TEXT NOT NULL,
+    post_id UUID REFERENCES post(id) ON DELETE CASCADE,
+    autor_id UUID REFERENCES usuario(id) ON DELETE CASCADE,
+    comentario_pai_id UUID REFERENCES comentario(id) ON DELETE CASCADE, -- para respostas
+    data_criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    data_atualizacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS curtida_comentario (
+    comentario_id UUID REFERENCES comentario(id) ON DELETE CASCADE,
+    usuario_id UUID REFERENCES usuario(id) ON DELETE CASCADE,
+    PRIMARY KEY (comentario_id, usuario_id)
 );

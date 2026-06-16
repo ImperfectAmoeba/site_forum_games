@@ -49,14 +49,14 @@ public class SecurityConfig {
         return http
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
-                // Páginas públicas (qualquer um pode acessar)
                 .requestMatchers("/", "/login", "/css/**", "/js/**", "/usuario", "/listagem").permitAll()
                 
-                // Áreas que exigem ADMIN apenas
                 .requestMatchers("/categoria/cadastrar", "/categoria/listar", "/categoria/atribuir-moderador").hasAuthority("admin")
                 .requestMatchers("/moderador/**").hasAuthority("admin")
                 
-                // Qualquer outra requisição exige usuário logado
+                .requestMatchers("/post/listar", "/post/{id}").permitAll()
+                .requestMatchers("/post/criar", "/post/{id}/editar", "/post/{id}/deletar").authenticated()
+                .requestMatchers("/post/{id}/editar", "/post/{id}/deletar").hasAnyAuthority("admin", "mod")
                 .anyRequest().authenticated()
             )
             .formLogin(form -> form

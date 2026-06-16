@@ -16,8 +16,16 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.example.aulabd.model.PostService;
+import com.example.aulabd.model.Post;
+import java.util.List;
 import com.example.aulabd.model.Usuario;
 import com.example.aulabd.model.UsuarioService;
+import com.example.aulabd.model.Post;
+import com.example.aulabd.model.CategoriaService;
+import java.util.List;
+import com.example.aulabd.model.Categoria;
+import java.util.List;
 
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -28,14 +36,21 @@ public class PaginaController {
     private ApplicationContext context;
 
     @GetMapping("/")
-    public String index(){
-        return "index";
-    }
+public String index(Model model) {
+    PostService ps = context.getBean(PostService.class);
+    List<Post> posts = ps.listarPosts();
+    model.addAttribute("posts", posts);
+    return "index";
+}
 
     @GetMapping("/nova-duvida")
-    public String nova_duvida(){
-        return "nova-duvida";
-    }
+public String nova_duvida(Model model) {
+    CategoriaService cs = context.getBean(CategoriaService.class);
+    List<Categoria> categorias = cs.listarCategorias();
+    model.addAttribute("post", new Post());
+    model.addAttribute("categorias", categorias);
+    return "nova-duvida";
+}
 
     @GetMapping("/detalhes-duvida")
     public String detalhes_duvida(){

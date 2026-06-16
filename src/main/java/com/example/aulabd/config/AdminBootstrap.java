@@ -37,9 +37,6 @@ public class AdminBootstrap {
                     "INSERT INTO usuario(nome, email, senha) VALUES (?, ?, ?)",
                     "admin", "admin@gamehelp.com", senhaCriptografada
                 );
-                System.out.println("✅ Usuário admin criado com sucesso!");
-                System.out.println("   Apelido: admin");
-                System.out.println("   Senha: (configurada via variável de ambiente)");
             } else {
                 System.out.println("ℹ️ Usuário admin já existe.");
             }
