@@ -9,6 +9,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -48,6 +49,30 @@ public String listarCategorias(Model model) {
     
     model.addAttribute("categorias", categorias);
     return "listarcategorias";
+}
+
+@GetMapping("/categoria/{id}/editar")
+public String formEditarCategoria(@PathVariable("id") String id, Model model) {
+    CategoriaService cs = context.getBean(CategoriaService.class);
+    Categoria categoria = cs.buscarCategoriaPorId(id);
+    model.addAttribute("categoria", categoria);
+    return "form-editar-categoria";
+}
+
+@PostMapping("/categoria/{id}/editar")
+public String editarCategoria(@PathVariable("id") String id,
+                              @ModelAttribute Categoria categoria) {
+    categoria.setId(id);
+    CategoriaService cs = context.getBean(CategoriaService.class);
+    cs.atualizarCategoria(categoria);
+    return "redirect:/categoria/listar";
+}
+
+@PostMapping("/categoria/{id}/deletar")
+public String deletarCategoria(@PathVariable("id") String id) {
+    CategoriaService cs = context.getBean(CategoriaService.class);
+    cs.deletarCategoria(id);
+    return "redirect:/categoria/listar";
 }
 
 }

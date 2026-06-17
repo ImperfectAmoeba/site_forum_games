@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Como derrotar Malenia? · Fórum Dicas de Jogos</title>
-    <link rel="stylesheet" th:href="@{css/style.css}">
+    <title th:text="${post.titulo} + ' · GameHelp Forum'">Detalhes do Post</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
     <style>
         .main-detalhe {
             display: block;
@@ -50,9 +50,11 @@
         .detalhe-acoes {
             display: flex;
             gap: 0.8rem;
+            flex-wrap: wrap;
+            align-items: center;
         }
 
-        .btn-editar, .btn-excluir {
+        .btn-editar, .btn-excluir, .btn-mudar-categoria {
             border: none;
             padding: 0.6rem 1.5rem;
             border-radius: 40px;
@@ -64,6 +66,7 @@
             align-items: center;
             gap: 0.4rem;
             border: 2px solid transparent;
+            text-decoration: none;
         }
 
         .btn-editar {
@@ -86,6 +89,16 @@
             transform: scale(1.02);
         }
 
+        .btn-mudar-categoria {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+
+        .btn-mudar-categoria:hover {
+            background-color: #fce8a0;
+            transform: scale(1.02);
+        }
+
         .detalhe-conteudo {
             font-size: 1.15rem;
             line-height: 1.7;
@@ -94,27 +107,48 @@
             white-space: pre-wrap;
         }
 
-        .detalhe-conteudo p {
-            margin-bottom: 1.2rem;
+        .form-mudar-categoria {
+            display: inline-block;
         }
 
-        .spoiler-alerta {
-            background: #fff3cd;
-            border-left: 8px solid #e6b800;
-            padding: 1rem 1.5rem;
-            border-radius: 16px;
-            margin: 1.5rem 0;
-            font-weight: 500;
-            color: #856404;
+        .form-mudar-categoria select {
+            padding: 0.5rem 1rem;
+            border-radius: 40px;
+            border: 2px solid #d5e0f0;
+            font-size: 0.95rem;
+            background-color: white;
+            cursor: pointer;
         }
 
-        /* Seção de respostas */
+        .form-mudar-categoria select:focus {
+            outline: none;
+            border-color: #5f7eb3;
+        }
+
+        .form-mudar-categoria button {
+            border: none;
+            padding: 0.5rem 1.5rem;
+            border-radius: 40px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: 0.2s;
+            background-color: #1e3b5c;
+            color: white;
+        }
+
+        .form-mudar-categoria button:hover {
+            background-color: #2b4e77;
+            transform: scale(1.02);
+        }
+
         .respostas-section {
             background: white;
             border-radius: 24px;
             padding: 2rem;
             box-shadow: 0 8px 20px rgba(0,20,50,0.04);
             border: 1px solid #dde3ed;
+            margin-bottom: 2rem;
         }
 
         .respostas-header {
@@ -128,23 +162,33 @@
         .respostas-header h2 {
             font-size: 1.8rem;
             color: #1e2b41;
+            margin: 0;
         }
 
         .btn-nova-resposta {
             background-color: #1e3b5c;
             color: white;
             border: none;
-            padding: 0.8rem 2rem;
+            padding: 0.6rem 1.5rem;
             border-radius: 60px;
             font-weight: 600;
             cursor: pointer;
             transition: 0.2s;
-            border: 2px solid transparent;
+            font-size: 0.95rem;
         }
 
         .btn-nova-resposta:hover {
             background-color: #2b4e77;
             transform: scale(1.02);
+        }
+
+        .btn-nova-resposta.secundario {
+            background-color: #e9eef5;
+            color: #1e2b41;
+        }
+
+        .btn-nova-resposta.secundario:hover {
+            background-color: #d7e0ec;
         }
 
         .card-resposta {
@@ -179,60 +223,49 @@
             margin-bottom: 0.8rem;
         }
 
-        .resposta-acoes {
-            display: flex;
-            gap: 1rem;
-            justify-content: flex-end;
-        }
-
-        .btn-editar-resposta, .btn-excluir-resposta {
-            background: none;
-            border: none;
-            color: #5b687c;
-            font-size: 0.9rem;
-            cursor: pointer;
-            padding: 0.2rem 0.5rem;
-            border-radius: 20px;
-            transition: 0.2s;
-        }
-
-        .btn-editar-resposta:hover {
-            color: #1e3b5c;
-            background: #e3eaf3;
-        }
-
-        .btn-excluir-resposta:hover {
-            color: #a13030;
-            background: #ffe6e6;
-        }
-
-        /* Formulário de nova resposta (inicialmente oculto) */
-        .form-resposta {
-            background: #f8fafd;
-            border-radius: 20px;
-            padding: 1.8rem;
-            margin-top: 2rem;
+        .form-comentario {
             display: none;
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background: #f8fafd;
+            border-radius: 16px;
         }
 
-        .form-resposta.ativo {
-            display: block;
-        }
-
-        .form-resposta textarea {
+        .form-comentario textarea {
             width: 100%;
             padding: 1rem;
             border: 2px solid #dde3ed;
             border-radius: 16px;
-            font-size: 1rem;
             font-family: inherit;
-            margin-bottom: 1rem;
             resize: vertical;
+            font-size: 1rem;
         }
 
-        .form-resposta-actions {
-            display: flex;
-            gap: 1rem;
+        .form-comentario textarea:focus {
+            outline: none;
+            border-color: #5f7eb3;
+        }
+
+        .btn-acao-comentario {
+            background: none;
+            border: none;
+            color: #5b687c;
+            cursor: pointer;
+            font-size: 0.9rem;
+            padding: 0.2rem 0.5rem;
+        }
+
+        .btn-acao-comentario:hover {
+            text-decoration: underline;
+        }
+
+        .btn-excluir-comentario {
+            color: #a13030;
+        }
+
+        .btn-excluir-comentario:hover {
+            background-color: #ffe6e6;
+            border-radius: 20px;
         }
     </style>
 </head>
@@ -241,115 +274,188 @@
         <div class="container header-container">
             <h1 class="logo"><a th:href="@{/}">GameHelp Forum</a></h1>
             <nav>
-    <ul class="nav-links">
-        <!-- Links comuns para todos -->
-        <li sec:authorize="isAuthenticated()" class="user-greeting">
-            <span>Olá, <strong sec:authentication="name"></strong>!</span>
-        </li>
-        <li><a th:href="@{/}">Início</a></li>
-        <li><a th:href="@{/nova-duvida}">Nova Dúvida</a></li>
-        <li><a th:href="@{/listagem}">Usuários</a></li>
-
-        <!-- ===== USUÁRIO NÃO LOGADO ===== -->
-        <li sec:authorize="isAnonymous()"><a th:href="@{/login}">Entrar</a></li>
-        <li sec:authorize="isAnonymous()"><a th:href="@{/usuario}">Registrar</a></li>
-
-        <!-- ===== USUÁRIO LOGADO (COMUM) ===== -->
-        <li sec:authorize="isAuthenticated()"><a th:href="@{/editar}">Editar Conta</a></li>
-        <li sec:authorize="isAuthenticated()"><a th:href="@{/excluir}">Excluir Conta</a></li>
-
-        <!-- ===== MODERADOR (cargo 'mod') ===== -->
-        <li sec:authorize="hasAuthority('mod')"><a th:href="@{/moderador/pendentes}">Moderação</a></li>
-
-        <!-- ===== ADMIN (cargo 'admin') ===== -->
-        <li sec:authorize="hasAuthority('admin')"><a th:href="@{/categoria/listar}">Categorias</a></li>
-
-        <!-- ===== SAIR (para todos logados) ===== -->
-        <li sec:authorize="isAuthenticated()">
-            <a th:href="@{/logout}" class="logout-btn" onclick="return confirm('Deseja sair?')">Sair</a>
-        </li>
-    </ul>
-</nav>
+                <ul class="nav-links">
+                    <li sec:authorize="isAuthenticated()" class="user-greeting">
+                        <span>Olá, <strong sec:authentication="name"></strong>!</span>
+                    </li>
+                    <li><a th:href="@{/}">Início</a></li>
+                    <li><a th:href="@{/nova-duvida}">Nova Dúvida</a></li>
+                    <li><a th:href="@{/listagem}">Usuários</a></li>
+                    <li sec:authorize="isAnonymous()"><a th:href="@{/login}">Entrar</a></li>
+                    <li sec:authorize="isAnonymous()"><a th:href="@{/usuario}">Registrar</a></li>
+                    <li sec:authorize="isAuthenticated()"><a th:href="@{/editar}">Editar Conta</a></li>
+                    <li sec:authorize="isAuthenticated()"><a th:href="@{/excluir}">Excluir Conta</a></li>
+                    <li sec:authorize="hasAuthority('mod')"><a th:href="@{/moderador/pendentes}">Moderação</a></li>
+                    <li sec:authorize="hasAuthority('admin')"><a th:href="@{/categoria/listar}">Categorias</a></li>
+                    <li sec:authorize="isAuthenticated()">
+                        <a th:href="@{/logout}" onclick="return confirm('Deseja sair?')">Sair</a>
+                    </li>
+                </ul>
+            </nav>
         </div>
     </header>
 
     <main class="container main-detalhe">
-        <article class="card-detalhe" data-id="123">
+        <article class="card-detalhe">
             <div class="detalhe-header">
                 <div class="detalhe-titulo-area">
-                    <h1>Como derrotar Malenia (Elden Ring)?</h1>
+                    <h1 th:text="${post.titulo}">Título do Post</h1>
                     <div class="detalhe-meta-principal">
-                        <span>Por: <strong>HollowKnightFan</strong></span>
-                        <span>10 mar 2026 · 14:32</span>
-                        <span class="jogo-tag">Elden Ring</span>
-                        <span>8 respostas</span>
-                        <span>247 visualizações</span>
+                        <span>Por: <strong th:text="${post.autorNome}">Autor</strong></span>
+                        <span th:text="${#temporals.format(post.dataCriacao, 'dd/MM/yyyy · HH:mm')}">Data</span>
+                        <span class="jogo-tag" th:text="${post.categoriaNome != null ? post.categoriaNome : 'Sem categoria'}">Categoria</span>
                     </div>
                 </div>
+
                 <div class="detalhe-acoes">
-                    <button class="btn-editar" onclick="editarDuvida()">
-                        Editar
-                    </button>
-                    <button class="btn-excluir" onclick="excluirDuvida()">
-                        Excluir
-                    </button>
+                    <a th:if="${#authentication != null and #authentication.name == post.autorNome}"
+                       th:href="@{/post/{id}/editar(id=${post.id})}" 
+                       class="btn-editar">Editar</a>
+
+                    <div sec:authorize="hasAuthority('admin')" style="display: flex; gap: 0.5rem; align-items: center;">
+                        <form class="form-mudar-categoria" th:action="@{/post/{id}/mudar-categoria(id=${post.id})}" method="post">
+                            <select name="categoriaId" required>
+                                <option th:each="cat : ${categorias}" 
+                                        th:value="${cat.id}" 
+                                        th:text="${cat.nome}"
+                                        th:selected="${cat.id == post.categoriaId}">
+                                </option>
+                            </select>
+                            <button type="submit">Mudar Categoria</button>
+                        </form>
+                    </div>
+
+                    <form th:if="${#authentication != null and (#authentication.name == post.autorNome or #authorization.expression('hasAuthority(''admin'')'))}"
+                          th:action="@{/post/{id}/deletar(id=${post.id})}" 
+                          method="post" 
+                          style="display:inline;">
+                        <button type="submit" class="btn-excluir" onclick="return confirm('Tem certeza que deseja excluir este post?')">Excluir</button>
+                    </form>
                 </div>
             </div>
 
             <div class="detalhe-conteudo">
-                <p>Já tentei umas 50 vezes, build de espada colossal (nível 145).</p>
-                <p>Ela sempre me mata na segunda fase com a florada ou com o ataque do grab. Uso a Mimic Tear +10, mas mesmo assim ela regenera muito vida.</p>
-                <p>Alguma dica de posicionamento, troca de build ou estratégia específica? Qual é a defesa ideal pra esse fight?</p>
-            </div>
-
-            <div class="spoiler-alerta">
-                ⚠️ Esta discussão contém spoilers.
+                <p th:text="${post.conteudo}">Conteúdo do post</p>
             </div>
         </article>
 
+        <!-- Seção de comentários -->
         <section class="respostas-section">
             <div class="respostas-header">
-                <h2>Respostas (8)</h2>
-                <button class="btn-nova-resposta" onclick="mostrarFormResposta()">
-                    ＋ Nova resposta
+                <h2>Comentários (<span th:text="${comentarios != null ? comentarios.size() : 0}">0</span>)</h2>
+                <button sec:authorize="isAuthenticated()" 
+                        class="btn-nova-resposta" 
+                        onclick="document.getElementById('formNovoComentario').style.display = 'block'; this.style.display = 'none';">
+                    ＋ Novo comentário
                 </button>
             </div>
 
-            <div id="formNovaResposta" class="form-resposta">
-                <h3 style="margin-bottom: 1rem;">Sua resposta</h3>
-                <textarea id="respostaTexto" rows="4" placeholder="Digite sua resposta..."></textarea>
-                <div class="form-resposta-actions">
-                </div>
+            <div id="formNovoComentario" class="form-comentario">
+                <form th:action="@{/comentario/criar}" method="post">
+                    <input type="hidden" name="postId" th:value="${post.id}">
+                    <div style="margin-bottom: 1rem;">
+                        <textarea name="conteudo" rows="3" placeholder="Escreva seu comentário..." required></textarea>
+                    </div>
+                    <div style="display: flex; gap: 1rem;">
+                        <button type="submit" class="btn-nova-resposta" style="padding: 0.5rem 2rem;">Publicar</button>
+                        <button type="button" class="btn-nova-resposta secundario" onclick="document.getElementById('formNovoComentario').style.display = 'none'; document.querySelector('.respostas-header .btn-nova-resposta').style.display = 'inline-block';">Cancelar</button>
+                    </div>
+                </form>
             </div>
 
             <div class="lista-respostas">
-                <div class="card-resposta" data-resposta-id="1">
-                    <div class="resposta-meta">
-                        <span class="resposta-autor">LetMeSoloHer</span>
-                        <span class="resposta-data">10 mar 2026 · 15:20</span>
-                    </div>
-                    <div class="resposta-conteudo">
-                        Use a espada "Rio da Guerra" (River of Blood) com build de sangue. Na primeira fase, fique na frente dela para provocar o ataque de investida, desvie e bate. Na segunda fase, quando ela subir para a florada, corre pra trás e depois ataca.
-                
+                <div th:if="${comentarios == null or comentarios.empty}" style="text-align: center; padding: 2rem; color: #5b687c;">
+                    <p>Nenhum comentário ainda. Seja o primeiro!</p>
                 </div>
 
-                <div class="card-resposta" data-resposta-id="2">
+                <div th:each="comentario : ${comentarios}" class="card-resposta">
                     <div class="resposta-meta">
-                        <span class="resposta-autor">TarnishedPro</span>
-                        <span class="resposta-data">10 mar 2026 · 16:45</span>
+                        <span class="resposta-autor" th:text="${comentario.autorNome}">Autor</span>
+                        <span class="resposta-data" th:text="${#temporals.format(comentario.dataCriacao, 'dd/MM/yyyy · HH:mm')}">Data</span>
                     </div>
-                    <div class="resposta-conteudo">
-                        Recomendo usar o escudo de gelo e a adaga de gelo (Hoarfrost Stomp). Mantém distância e usa a skill quando ela estiver vindo. Pra segunda fase, usa pedra de gelo pra quebrar a postura.
-                
-                </div>
+                    <div class="resposta-conteudo" th:text="${comentario.conteudo}">Conteúdo</div>
 
-                <div class="card-resposta" data-resposta-id="3">
-                    <div class="resposta-meta">
-                        <span class="resposta-autor">MoonveilMain</span>
-                        <span class="resposta-data">11 mar 2026 · 09:12</span>
+                    <!-- Ações do comentário (CORRIGIDAS) -->
+                    <div style="display: flex; gap: 0.5rem; margin-top: 0.5rem; flex-wrap: wrap; align-items: center;">
+                        <form th:action="@{/comentario/{id}/curtir(id=${comentario.id})}" method="post" style="display:inline;">
+                            <button type="submit" class="btn-acao-comentario">❤️ <span th:text="${comentario.curtidas}">0</span></button>
+                        </form>
+                        <form th:action="@{/comentario/{id}/descurtir(id=${comentario.id})}" method="post" style="display:inline;">
+                            <button type="submit" class="btn-acao-comentario">💔</button>
+                        </form>
+
+                        <button th:if="${#authentication != null}" 
+                                class="btn-acao-comentario"
+                                onclick="document.getElementById('formResposta_${comentario.id}').style.display = 'block'">💬 Responder</button>
+
+                        <button th:if="${#authentication != null and #authentication.name == comentario.autorNome}"
+                                class="btn-acao-comentario"
+                                onclick="document.getElementById('formEditar_${comentario.id}').style.display = 'block'">✏️ Editar</button>
+
+                        <form th:if="${#authentication != null and (#authentication.name == comentario.autorNome or #authorization.expression('hasAuthority(''admin'')'))}"
+                              th:action="@{/comentario/{id}/deletar(id=${comentario.id})}" 
+                              method="post" 
+                              style="display:inline;">
+                            <input type="hidden" name="postId" th:value="${post.id}">
+                            <button type="submit" class="btn-acao-comentario btn-excluir-comentario" onclick="return confirm('Excluir comentário?')">🗑️ Excluir</button>
+                        </form>
                     </div>
-                    <div class="resposta-conteudo">
-                        Build de inteligência com a Moonveil. O segredo é usar o ataque carregado pra quebrar a postura rápido. Na segunda fase, quando ela fizer o clone de ataque, corre em círculo.
+
+                    <div id="formResposta_${comentario.id}" style="display: none; margin-top: 1rem; padding-left: 2rem;">
+                        <form th:action="@{/comentario/criar}" method="post">
+                            <input type="hidden" name="postId" th:value="${post.id}">
+                            <input type="hidden" name="comentarioPaiId" th:value="${comentario.id}">
+                            <textarea name="conteudo" rows="2" placeholder="Responder a @${comentario.autorNome}..." required style="width: 100%; padding: 0.8rem; border: 2px solid #dde3ed; border-radius: 16px; font-family: inherit; resize: vertical;"></textarea>
+                            <div style="display: flex; gap: 1rem; margin-top: 0.5rem;">
+                                <button type="submit" class="btn-nova-resposta" style="padding: 0.3rem 1.5rem; font-size: 0.9rem;">Responder</button>
+                                <button type="button" class="btn-acao-comentario" onclick="document.getElementById('formResposta_${comentario.id}').style.display = 'none'">Cancelar</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div id="formEditar_${comentario.id}" style="display: none; margin-top: 1rem; padding-left: 2rem;">
+                        <form th:action="@{/comentario/{id}/editar(id=${comentario.id})}" method="post">
+                            <input type="hidden" name="postId" th:value="${post.id}">
+                            <textarea name="conteudo" rows="2" required style="width: 100%; padding: 0.8rem; border: 2px solid #dde3ed; border-radius: 16px; font-family: inherit; resize: vertical;" th:text="${comentario.conteudo}"></textarea>
+                            <div style="display: flex; gap: 1rem; margin-top: 0.5rem;">
+                                <button type="submit" class="btn-nova-resposta" style="padding: 0.3rem 1.5rem; font-size: 0.9rem;">Salvar</button>
+                                <button type="button" class="btn-acao-comentario" onclick="document.getElementById('formEditar_${comentario.id}').style.display = 'none'">Cancelar</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div th:if="${comentariosRespostas != null and comentariosRespostas[comentario.id] != null and !comentariosRespostas[comentario.id].isEmpty()}" 
+                         style="margin-top: 1rem; padding-left: 2rem; border-left: 2px solid #e7ecf5;">
+                        <button onclick="toggleRespostas('respostas_${comentario.id}')" 
+                                style="background: none; border: none; color: #5b687c; cursor: pointer; font-size: 0.9rem; padding: 0.3rem 0; font-weight: 500;">
+                            📌 Exibir respostas (<span th:text="${comentariosRespostas[comentario.id].size()}">0</span>)
+                        </button>
+                        <div id="respostas_${comentario.id}" style="display: none;">
+                            <div th:each="resposta : ${comentariosRespostas[comentario.id]}" class="card-resposta" style="padding: 1rem 0; border-bottom: 1px solid #e7ecf5;">
+                                <div class="resposta-meta">
+                                    <span class="resposta-autor" th:text="${resposta.autorNome}">Autor</span>
+                                    <span class="resposta-data" th:text="${#temporals.format(resposta.dataCriacao, 'dd/MM/yyyy · HH:mm')}">Data</span>
+                                </div>
+                                <div class="resposta-conteudo" th:text="${resposta.conteudo}">Conteúdo</div>
+                                <div style="display: flex; gap: 0.5rem; margin-top: 0.5rem; flex-wrap: wrap; align-items: center;">
+                                    <form th:action="@{/comentario/{id}/curtir(id=${resposta.id})}" method="post" style="display:inline;">
+                                        <input type="hidden" name="postId" th:value="${post.id}">
+                                        <button type="submit" class="btn-acao-comentario">❤️ <span th:text="${resposta.curtidas}">0</span></button>
+                                    </form>
+                                    <form th:action="@{/comentario/{id}/descurtir(id=${resposta.id})}" method="post" style="display:inline;">
+                                        <input type="hidden" name="postId" th:value="${post.id}">
+                                        <button type="submit" class="btn-acao-comentario">💔</button>
+                                    </form>
+                                    <form th:if="${#authentication != null and (#authentication.name == resposta.autorNome or #authorization.expression('hasAuthority(''admin'')'))}"
+                                          th:action="@{/comentario/{id}/deletar(id=${resposta.id})}" 
+                                          method="post" 
+                                          style="display:inline;">
+                                        <input type="hidden" name="postId" th:value="${post.id}">
+                                        <button type="submit" class="btn-acao-comentario btn-excluir-comentario" onclick="return confirm('Excluir resposta?')">🗑️ Excluir</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -358,10 +464,28 @@
 
     <footer>
         <div class="container footer-content">
-            <p>Fórum de Dicas · projeto acadêmico estático</p>
+            <p>GameHelp Forum · projeto acadêmico</p>
             <p>Programação para Servidores II</p>
         </div>
     </footer>
 
+    <script>
+        function toggleRespostas(id) {
+            var element = document.getElementById(id);
+            if (element.style.display === 'none' || element.style.display === '') {
+                element.style.display = 'block';
+                var button = element.previousElementSibling;
+                if (button && button.tagName === 'BUTTON') {
+                    button.innerHTML = '📌 Ocultar respostas (<span>' + element.querySelectorAll('.card-resposta').length + '</span>)';
+                }
+            } else {
+                element.style.display = 'none';
+                var button = element.previousElementSibling;
+                if (button && button.tagName === 'BUTTON') {
+                    button.innerHTML = '📌 Exibir respostas (<span>' + element.querySelectorAll('.card-resposta').length + '</span>)';
+                }
+            }
+        }
+    </script>
 </body>
 </html>

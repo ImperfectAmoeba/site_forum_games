@@ -18,4 +18,16 @@ public class CategoriaService {
     public List<Categoria> listarCategorias() {
         return categoriaDAO.listarCategorias();
     }
+
+    public Categoria buscarCategoriaPorId(String id) {
+    return categoriaDAO.buscarCategoriaPorId(id);
+}
+
+public void atualizarCategoria(Categoria categoria) {
+    categoriaDAO.atualizarCategoria(categoria);
+}
+
+public void deletarCategoria(String id) {
+    categoriaDAO.deletarCategoria(id);
+}
 }

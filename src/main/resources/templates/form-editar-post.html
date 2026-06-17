@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar Post - GameHelp Forum</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <style>
+        .main-editar {
+            display: block;
+            max-width: 800px;
+            margin: 2rem auto;
+        }
+
+        .card-editar {
+            background: white;
+            border-radius: 28px;
+            padding: 2.2rem;
+            box-shadow: 0 12px 30px rgba(0,20,50,0.08);
+            border: 1px solid #d5e0f0;
+        }
+
+        .card-editar h2 {
+            font-size: 2rem;
+            color: #1f2b40;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            color: #1e2b41;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.9rem 1.2rem;
+            border: 2px solid #dde3ed;
+            border-radius: 20px;
+            font-size: 1rem;
+            font-family: inherit;
+            transition: border 0.2s;
+            background-color: #fbfdff;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #5f7eb3;
+            box-shadow: 0 0 0 3px rgba(83, 121, 186, 0.15);
+        }
+
+        .btn-salvar {
+            background-color: #1e3b5c;
+            color: white;
+            border: none;
+            padding: 1rem 2.5rem;
+            border-radius: 60px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: 0.2s;
+            width: 100%;
+        }
+
+        .btn-salvar:hover {
+            background-color: #2b4e77;
+            transform: scale(1.02);
+        }
+
+        .btn-cancelar {
+            display: block;
+            text-align: center;
+            margin-top: 1rem;
+            color: #5b687c;
+            text-decoration: none;
+        }
+
+        .btn-cancelar:hover {
+            text-decoration: underline;
+        }
+
+        .info-box {
+            background: #e3eaf3;
+            padding: 1rem;
+            border-radius: 16px;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            color: #1e3b5c;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container header-container">
+            <h1 class="logo"><a th:href="@{/}">GameHelp Forum</a></h1>
+            <nav>
+                <ul class="nav-links">
+                    <li sec:authorize="isAuthenticated()" class="user-greeting">
+                        <span>Olá, <strong sec:authentication="name"></strong>!</span>
+                    </li>
+                    <li><a th:href="@{/}">Início</a></li>
+                    <li><a th:href="@{/nova-duvida}">Nova Dúvida</a></li>
+                    <li><a th:href="@{/listagem}">Usuários</a></li>
+                    <li sec:authorize="isAnonymous()"><a th:href="@{/login}">Entrar</a></li>
+                    <li sec:authorize="isAnonymous()"><a th:href="@{/usuario}">Registrar</a></li>
+                    <li sec:authorize="isAuthenticated()"><a th:href="@{/editar}">Editar Conta</a></li>
+                    <li sec:authorize="isAuthenticated()"><a th:href="@{/excluir}">Excluir Conta</a></li>
+                    <li sec:authorize="hasAuthority('mod')"><a th:href="@{/moderador/pendentes}">Moderação</a></li>
+                    <li sec:authorize="hasAuthority('admin')"><a th:href="@{/categoria/listar}">Categorias</a></li>
+                    <li sec:authorize="isAuthenticated()">
+                        <a th:href="@{/logout}" onclick="return confirm('Deseja sair?')">Sair</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container main-editar">
+        <div class="card-editar">
+            <h2>✏️ Editar Post</h2>
+
+            <div class="info-box">
+                <p>Editando: <strong th:text="${post.titulo}"></strong></p>
+            </div>
+
+            <form th:action="@{/post/{id}/editar(id=${post.id})}" method="post" th:object="${post}">
+                <div class="form-group">
+                    <label>Título:</label>
+                    <input type="text" name="titulo" th:value="*{titulo}" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Categoria:</label>
+                    <select name="categoriaId" required>
+                        <option th:each="cat : ${categorias}" 
+                                th:value="${cat.id}" 
+                                th:text="${cat.nome}"
+                                th:selected="${cat.id == post.categoriaId}">
+                        </option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Conteúdo:</label>
+                    <textarea name="conteudo" rows="6" required th:text="*{conteudo}"></textarea>
+                </div>
+
+                <button type="submit" class="btn-salvar">Salvar Alterações</button>
+                <a th:href="@{/post/{id}(id=${post.id})}" class="btn-cancelar">Cancelar</a>
+            </form>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container footer-content">
+            <p>GameHelp Forum · projeto acadêmico</p>
+        </div>
+    </footer>
+</body>
+</html>

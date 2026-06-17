@@ -88,4 +88,14 @@ public class PostDAO {
         }
         return posts;
     }
+
+    public List<Map<String, Object>> listarCategoriasMaisPostadas(int limite) {
+    String sql = "SELECT c.id, c.nome, COUNT(p.id) as total " +
+                 "FROM categoria c " +
+                 "LEFT JOIN post p ON p.categoria_id = c.id " +
+                 "GROUP BY c.id, c.nome " +
+                 "ORDER BY total DESC " +
+                 "LIMIT ?";
+    return jdbc.queryForList(sql, limite);
+}
 }

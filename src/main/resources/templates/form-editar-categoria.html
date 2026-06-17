@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar Categoria - GameHelp Forum</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <style>
+        .main-editar {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 70vh;
+        }
+        .card-editar {
+            background: white;
+            border-radius: 28px;
+            padding: 2.5rem;
+            box-shadow: 0 15px 35px rgba(23, 55, 90, 0.15);
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+        }
+        .form-group {
+            text-align: left;
+            margin-bottom: 1.5rem;
+        }
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            color: #1e2b41;
+            margin-bottom: 0.5rem;
+        }
+        .form-group input, .form-group textarea {
+            width: 100%;
+            padding: 0.9rem 1.2rem;
+            border: 2px solid #dde3ed;
+            border-radius: 20px;
+            font-size: 1rem;
+        }
+        .btn-salvar {
+            background-color: #1e3b5c;
+            color: white;
+            border: none;
+            padding: 1rem 2.5rem;
+            border-radius: 60px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .btn-cancelar {
+            display: block;
+            margin-top: 1rem;
+            color: #5b687c;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <header>...</header>
+
+    <main class="container main-editar">
+        <div class="card-editar">
+            <h2>✏️ Editar Categoria</h2>
+            <form th:action="@{/categoria/{id}/editar(id=${categoria.id})}" method="post" th:object="${categoria}">
+                <div class="form-group">
+                    <label>Nome do jogo:</label>
+                    <input type="text" name="nome" th:value="*{nome}" required>
+                </div>
+                <div class="form-group">
+                    <label>Descrição:</label>
+                    <textarea name="descricao" rows="4" th:text="*{descricao}"></textarea>
+                </div>
+                <button type="submit" class="btn-salvar">Salvar</button>
+                <a th:href="@{/categoria/listar}" class="btn-cancelar">Cancelar</a>
+            </form>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container footer-content">
+            <p>GameHelp Forum · projeto acadêmico</p>
+        </div>
+    </footer>
+</body>
+</html>

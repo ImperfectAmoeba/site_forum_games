@@ -80,15 +80,12 @@
                 </ul>
             </div>
             <div class="card-sidebar">
-                <h3>Jogos em alta</h3>
-                <ul class="tag-cloud">
-                    <li>Elden Ring</li>
-                    <li>Stardew Valley</li>
-                    <li>Baldur's Gate 3</li>
-                    <li>Hades</li>
-                    <li>Hollow Knight</li>
-                </ul>
-            </div>
+    <h3>Em alta</h3>
+    <ul class="tag-cloud">
+        <li th:each="cat : ${topCategorias}" th:text="${cat.nome} + ' (' + ${cat.total} + ')'"></li>
+        <li th:if="${topCategorias == null or topCategorias.empty}">Nenhuma categoria com posts ainda</li>
+    </ul>
+</div>
         </aside>
     </main>
 

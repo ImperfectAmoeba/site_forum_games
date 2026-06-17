@@ -1,6 +1,7 @@
 package com.example.aulabd.model;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -34,4 +35,8 @@ public class PostService {
     public List<Post> listarPostsPorCategoria(String categoriaId) {
         return postDAO.listarPostsPorCategoria(categoriaId);
     }
+
+    public List<Map<String, Object>> listarCategoriasMaisPostadas(int limite) {
+    return postDAO.listarCategoriasMaisPostadas(limite);
+}
 }

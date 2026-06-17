@@ -44,5 +44,25 @@ public class CategoriaDAO {
         }
         return categorias;
     }
+
+    public Categoria buscarCategoriaPorId(String id) {
+    String sql = "SELECT * FROM categoria WHERE id = ?::uuid";
+    Map<String, Object> row = jdbc.queryForMap(sql, id);
+    Categoria c = new Categoria();
+    c.setId(((java.util.UUID) row.get("id")).toString());
+    c.setNome((String) row.get("nome"));
+    c.setDescricao((String) row.get("descricao"));
+    return c;
+}
+
+public void atualizarCategoria(Categoria categoria) {
+    String sql = "UPDATE categoria SET nome = ?, descricao = ? WHERE id = ?::uuid";
+    jdbc.update(sql, categoria.getNome(), categoria.getDescricao(), categoria.getId());
+}
+
+public void deletarCategoria(String id) {
+    String sql = "DELETE FROM categoria WHERE id = ?::uuid";
+    jdbc.update(sql, id);
+}
     
 }

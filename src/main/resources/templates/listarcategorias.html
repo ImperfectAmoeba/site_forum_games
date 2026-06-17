@@ -75,6 +75,42 @@
         .tabela-categorias tbody tr:hover {
             background-color: #f8fafd;
         }
+
+        .btn-acao {
+            padding: 0.3rem 1rem;
+            border-radius: 40px;
+            font-weight: 500;
+            font-size: 0.85rem;
+            text-decoration: none;
+            border: 1px solid transparent;
+            display: inline-block;
+            cursor: pointer;
+        }
+
+        .btn-editar-categoria {
+            background-color: #e3eaf3;
+            color: #1e3b5c;
+            border-color: #c0cee2;
+        }
+
+        .btn-editar-categoria:hover {
+            background-color: #c9d6e8;
+        }
+
+        .btn-excluir-categoria {
+            background-color: #ffe6e6;
+            color: #a13030;
+            border-color: #fbbaba;
+        }
+
+        .btn-excluir-categoria:hover {
+            background-color: #fcc;
+        }
+
+        .acoes-container {
+            display: flex;
+            gap: 0.5rem;
+        }
     </style>
 </head>
 <body>
@@ -82,35 +118,24 @@
         <div class="container header-container">
             <h1 class="logo"><a th:href="@{/}">GameHelp Forum</a></h1>
             <nav>
-    <ul class="nav-links">
-        <!-- Links comuns para todos -->
-        <li sec:authorize="isAuthenticated()" class="user-greeting">
-            <span>Olá, <strong sec:authentication="name"></strong>!</span>
-        </li>
-        <li><a th:href="@{/}">Início</a></li>
-        <li><a th:href="@{/nova-duvida}">Nova Dúvida</a></li>
-        <li><a th:href="@{/listagem}">Usuários</a></li>
-
-        <!-- ===== USUÁRIO NÃO LOGADO ===== -->
-        <li sec:authorize="isAnonymous()"><a th:href="@{/login}">Entrar</a></li>
-        <li sec:authorize="isAnonymous()"><a th:href="@{/usuario}">Registrar</a></li>
-
-        <!-- ===== USUÁRIO LOGADO (COMUM) ===== -->
-        <li sec:authorize="isAuthenticated()"><a th:href="@{/editar}">Editar Conta</a></li>
-        <li sec:authorize="isAuthenticated()"><a th:href="@{/excluir}">Excluir Conta</a></li>
-
-        <!-- ===== MODERADOR (cargo 'mod') ===== -->
-        <li sec:authorize="hasAuthority('mod')"><a th:href="@{/moderador/pendentes}">Moderação</a></li>
-
-        <!-- ===== ADMIN (cargo 'admin') ===== -->
-        <li sec:authorize="hasAuthority('admin')"><a th:href="@{/categoria/listar}">Categorias</a></li>
-
-        <!-- ===== SAIR (para todos logados) ===== -->
-        <li sec:authorize="isAuthenticated()">
-            <a th:href="@{/logout}" class="logout-btn" onclick="return confirm('Deseja sair?')">Sair</a>
-        </li>
-    </ul>
-</nav>
+                <ul class="nav-links">
+                    <li sec:authorize="isAuthenticated()" class="user-greeting">
+                        <span>Olá, <strong sec:authentication="name"></strong>!</span>
+                    </li>
+                    <li><a th:href="@{/}">Início</a></li>
+                    <li><a th:href="@{/nova-duvida}">Nova Dúvida</a></li>
+                    <li><a th:href="@{/listagem}">Usuários</a></li>
+                    <li sec:authorize="isAnonymous()"><a th:href="@{/login}">Entrar</a></li>
+                    <li sec:authorize="isAnonymous()"><a th:href="@{/usuario}">Registrar</a></li>
+                    <li sec:authorize="isAuthenticated()"><a th:href="@{/editar}">Editar Conta</a></li>
+                    <li sec:authorize="isAuthenticated()"><a th:href="@{/excluir}">Excluir Conta</a></li>
+                    <li sec:authorize="hasAuthority('mod')"><a th:href="@{/moderador/pendentes}">Moderação</a></li>
+                    <li sec:authorize="hasAuthority('admin')"><a th:href="@{/categoria/listar}">Categorias</a></li>
+                    <li sec:authorize="isAuthenticated()">
+                        <a th:href="@{/logout}" onclick="return confirm('Deseja sair?')">Sair</a>
+                    </li>
+                </ul>
+            </nav>
         </div>
     </header>
 
@@ -126,15 +151,24 @@
                     <tr>
                         <th>Nome</th>
                         <th>Descrição</th>
+                        <th sec:authorize="hasAuthority('admin')">Ações</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr th:if="${categorias == null or categorias.empty}">
-                        <td colspan="2" style="text-align: center;">Nenhuma categoria cadastrada ainda.</td>
+                        <td colspan="3" style="text-align: center;">Nenhuma categoria cadastrada ainda.</td>
                     </tr>
                     <tr th:each="categoria : ${categorias}" th:unless="${categorias == null or categorias.empty}">
                         <td th:text="${categoria.nome}">--</td>
                         <td th:text="${categoria.descricao}">--</td>
+                        <td sec:authorize="hasAuthority('admin')">
+                            <div class="acoes-container">
+                                <a th:href="@{/categoria/{id}/editar(id=${categoria.id})}" class="btn-acao btn-editar-categoria">Editar</a>
+                                <form th:action="@{/categoria/{id}/deletar(id=${categoria.id})}" method="post" style="display:inline;">
+                                    <button type="submit" class="btn-acao btn-excluir-categoria" onclick="return confirm('Tem certeza que deseja excluir esta categoria?')">Excluir</button>
+                                </form>
+                            </div>
+                        </td>
                     </tr>
                 </tbody>
             </table>
