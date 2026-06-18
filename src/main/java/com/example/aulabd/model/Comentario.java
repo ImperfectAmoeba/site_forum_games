@@ -14,6 +14,7 @@ public class Comentario {
     private LocalDateTime dataCriacao;
     private LocalDateTime dataAtualizacao;
     private int curtidas;
+    private int descurtidas;
 
     // Getters e Setters
     public String getId() { return id; }
@@ -34,6 +35,8 @@ public class Comentario {
     public void setDataAtualizacao(LocalDateTime dataAtualizacao) { this.dataAtualizacao = dataAtualizacao; }
     public int getCurtidas() { return curtidas; }
     public void setCurtidas(int curtidas) { this.curtidas = curtidas; }
+    public int getDescurtidas() { return descurtidas; }
+    public void setDescurtidas(int descurtidas) { this.descurtidas = descurtidas; }
 
     public static Comentario converter(Map<String, Object> row) {
         Comentario c = new Comentario();
@@ -60,6 +63,10 @@ public class Comentario {
         
         if (row.containsKey("curtidas") && row.get("curtidas") != null) {
             c.setCurtidas(((Number) row.get("curtidas")).intValue());
+        }
+        
+        if (row.containsKey("descurtidas") && row.get("descurtidas") != null) {
+            c.setDescurtidas(((Number) row.get("descurtidas")).intValue());
         }
         
         return c;

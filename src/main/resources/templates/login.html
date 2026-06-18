@@ -135,7 +135,6 @@
             <h1 class="logo"><a th:href="@{/}">GameHelp Forum</a></h1>
             <nav>
     <ul class="nav-links">
-        <!-- Links comuns para todos -->
         <li sec:authorize="isAuthenticated()" class="user-greeting">
             <span>Olá, <strong sec:authentication="name"></strong>!</span>
         </li>
@@ -143,21 +142,15 @@
         <li><a th:href="@{/nova-duvida}">Nova Dúvida</a></li>
         <li><a th:href="@{/listagem}">Usuários</a></li>
 
-        <!-- ===== USUÁRIO NÃO LOGADO ===== -->
         <li sec:authorize="isAnonymous()"><a th:href="@{/login}">Entrar</a></li>
         <li sec:authorize="isAnonymous()"><a th:href="@{/usuario}">Registrar</a></li>
 
-        <!-- ===== USUÁRIO LOGADO (COMUM) ===== -->
         <li sec:authorize="isAuthenticated()"><a th:href="@{/editar}">Editar Conta</a></li>
         <li sec:authorize="isAuthenticated()"><a th:href="@{/excluir}">Excluir Conta</a></li>
 
-        <!-- ===== MODERADOR (cargo 'mod') ===== -->
-        <li sec:authorize="hasAuthority('mod')"><a th:href="@{/moderador/pendentes}">Moderação</a></li>
 
-        <!-- ===== ADMIN (cargo 'admin') ===== -->
         <li sec:authorize="hasAuthority('admin')"><a th:href="@{/categoria/listar}">Categorias</a></li>
 
-        <!-- ===== SAIR (para todos logados) ===== -->
         <li sec:authorize="isAuthenticated()">
             <a th:href="@{/logout}" class="logout-btn" onclick="return confirm('Deseja sair?')">Sair</a>
         </li>
@@ -173,13 +166,10 @@
                 <p>Entre com seu apelido e senha</p>
             </div>
 
-            <!-- Mensagem de erro, se houver -->
             <div th:if="${errorMsg}" class="error-message" th:text="${errorMsg}"></div>
 
-            <!-- Mensagem de logout, se houver -->
             <div th:if="${logoutMsg}" class="logout-message" th:text="${logoutMsg}"></div>
 
-            <!-- Formulário de login do Spring Security -->
             <form th:action="@{/login}" method="post">
                 <div class="form-group">
                     <label for="username">Apelido</label>

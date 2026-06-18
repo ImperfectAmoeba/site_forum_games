@@ -58,3 +58,5 @@ CREATE TABLE IF NOT EXISTS curtida_comentario (
     usuario_id UUID REFERENCES usuario(id) ON DELETE CASCADE,
     PRIMARY KEY (comentario_id, usuario_id)
 );
+
+ALTER TABLE curtida_comentario ADD COLUMN IF NOT EXISTS tipo VARCHAR(10) DEFAULT 'curtir';

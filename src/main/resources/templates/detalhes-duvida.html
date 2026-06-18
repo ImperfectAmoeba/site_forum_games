@@ -285,7 +285,6 @@
                     <li sec:authorize="isAnonymous()"><a th:href="@{/usuario}">Registrar</a></li>
                     <li sec:authorize="isAuthenticated()"><a th:href="@{/editar}">Editar Conta</a></li>
                     <li sec:authorize="isAuthenticated()"><a th:href="@{/excluir}">Excluir Conta</a></li>
-                    <li sec:authorize="hasAuthority('mod')"><a th:href="@{/moderador/pendentes}">Moderação</a></li>
                     <li sec:authorize="hasAuthority('admin')"><a th:href="@{/categoria/listar}">Categorias</a></li>
                     <li sec:authorize="isAuthenticated()">
                         <a th:href="@{/logout}" onclick="return confirm('Deseja sair?')">Sair</a>
@@ -312,7 +311,7 @@
                        th:href="@{/post/{id}/editar(id=${post.id})}" 
                        class="btn-editar">Editar</a>
 
-                    <div sec:authorize="hasAuthority('admin')" style="display: flex; gap: 0.5rem; align-items: center;">
+                    <div sec:authorize="hasAnyAuthority('admin', 'mod')" style="display: flex; gap: 0.5rem; align-items: center;">
                         <form class="form-mudar-categoria" th:action="@{/post/{id}/mudar-categoria(id=${post.id})}" method="post">
                             <select name="categoriaId" required>
                                 <option th:each="cat : ${categorias}" 
@@ -323,9 +322,9 @@
                             </select>
                             <button type="submit">Mudar Categoria</button>
                         </form>
-                    </div>
+                    </div>  
 
-                    <form th:if="${#authentication != null and (#authentication.name == post.autorNome or #authorization.expression('hasAuthority(''admin'')'))}"
+                    <form th:if="${#authentication != null and (#authentication.name == post.autorNome or #authorization.expression('hasAnyAuthority(''admin'', ''mod'')'))}"
                           th:action="@{/post/{id}/deletar(id=${post.id})}" 
                           method="post" 
                           style="display:inline;">
@@ -343,9 +342,7 @@
         <section class="respostas-section">
             <div class="respostas-header">
                 <h2>Comentários (<span th:text="${comentarios != null ? comentarios.size() : 0}">0</span>)</h2>
-                <button sec:authorize="isAuthenticated()" 
-                        class="btn-nova-resposta" 
-                        onclick="document.getElementById('formNovoComentario').style.display = 'block'; this.style.display = 'none';">
+                <button sec:authorize="isAuthenticated()" class="btn-nova-resposta" onclick="document.getElementById('formNovoComentario').style.display = 'block'; this.style.display = 'none';">
                     ＋ Novo comentário
                 </button>
             </div>
@@ -375,24 +372,27 @@
                     </div>
                     <div class="resposta-conteudo" th:text="${comentario.conteudo}">Conteúdo</div>
 
-                    <!-- Ações do comentário (CORRIGIDAS) -->
                     <div style="display: flex; gap: 0.5rem; margin-top: 0.5rem; flex-wrap: wrap; align-items: center;">
                         <form th:action="@{/comentario/{id}/curtir(id=${comentario.id})}" method="post" style="display:inline;">
+                            <input type="hidden" name="postId" th:value="${post.id}">
                             <button type="submit" class="btn-acao-comentario">❤️ <span th:text="${comentario.curtidas}">0</span></button>
                         </form>
                         <form th:action="@{/comentario/{id}/descurtir(id=${comentario.id})}" method="post" style="display:inline;">
+                            <input type="hidden" name="postId" th:value="${post.id}">
                             <button type="submit" class="btn-acao-comentario">💔</button>
                         </form>
 
                         <button th:if="${#authentication != null}" 
                                 class="btn-acao-comentario"
-                                onclick="document.getElementById('formResposta_${comentario.id}').style.display = 'block'">💬 Responder</button>
+                                th:data-comentario-id="${comentario.id}"
+                                onclick="mostrarFormResposta(this.dataset.comentarioId)">💬 Responder</button>
 
                         <button th:if="${#authentication != null and #authentication.name == comentario.autorNome}"
                                 class="btn-acao-comentario"
-                                onclick="document.getElementById('formEditar_${comentario.id}').style.display = 'block'">✏️ Editar</button>
+                                th:data-comentario-id="${comentario.id}"
+                                onclick="mostrarFormEditar(this.dataset.comentarioId)">✏️ Editar</button>
 
-                        <form th:if="${#authentication != null and (#authentication.name == comentario.autorNome or #authorization.expression('hasAuthority(''admin'')'))}"
+                        <form th:if="${#authentication != null and (#authentication.name == comentario.autorNome or #authorization.expression('hasAnyAuthority(''admin'', ''mod'')'))}"
                               th:action="@{/comentario/{id}/deletar(id=${comentario.id})}" 
                               method="post" 
                               style="display:inline;">
@@ -401,36 +401,39 @@
                         </form>
                     </div>
 
-                    <div id="formResposta_${comentario.id}" style="display: none; margin-top: 1rem; padding-left: 2rem;">
+                    <!-- Formulário de resposta -->
+                    <div th:id="'formResposta_' + ${comentario.id}" style="display: none; margin-top: 1rem; padding-left: 2rem;">
                         <form th:action="@{/comentario/criar}" method="post">
                             <input type="hidden" name="postId" th:value="${post.id}">
                             <input type="hidden" name="comentarioPaiId" th:value="${comentario.id}">
                             <textarea name="conteudo" rows="2" placeholder="Responder a @${comentario.autorNome}..." required style="width: 100%; padding: 0.8rem; border: 2px solid #dde3ed; border-radius: 16px; font-family: inherit; resize: vertical;"></textarea>
                             <div style="display: flex; gap: 1rem; margin-top: 0.5rem;">
                                 <button type="submit" class="btn-nova-resposta" style="padding: 0.3rem 1.5rem; font-size: 0.9rem;">Responder</button>
-                                <button type="button" class="btn-acao-comentario" onclick="document.getElementById('formResposta_${comentario.id}').style.display = 'none'">Cancelar</button>
+                                <button type="button" class="btn-acao-comentario" th:data-comentario-id="${comentario.id}" onclick="fecharFormResposta(this.dataset.comentarioId)">Cancelar</button>
                             </div>
                         </form>
                     </div>
 
-                    <div id="formEditar_${comentario.id}" style="display: none; margin-top: 1rem; padding-left: 2rem;">
+                    <!-- Formulário de edição -->
+                    <div th:id="'formEditar_' + ${comentario.id}" style="display: none; margin-top: 1rem; padding-left: 2rem;">
                         <form th:action="@{/comentario/{id}/editar(id=${comentario.id})}" method="post">
                             <input type="hidden" name="postId" th:value="${post.id}">
                             <textarea name="conteudo" rows="2" required style="width: 100%; padding: 0.8rem; border: 2px solid #dde3ed; border-radius: 16px; font-family: inherit; resize: vertical;" th:text="${comentario.conteudo}"></textarea>
                             <div style="display: flex; gap: 1rem; margin-top: 0.5rem;">
                                 <button type="submit" class="btn-nova-resposta" style="padding: 0.3rem 1.5rem; font-size: 0.9rem;">Salvar</button>
-                                <button type="button" class="btn-acao-comentario" onclick="document.getElementById('formEditar_${comentario.id}').style.display = 'none'">Cancelar</button>
+                                <button type="button" class="btn-acao-comentario" th:data-comentario-id="${comentario.id}" onclick="fecharFormEditar(this.dataset.comentarioId)">Cancelar</button>
                             </div>
                         </form>
                     </div>
 
+                    <!-- Respostas -->
                     <div th:if="${comentariosRespostas != null and comentariosRespostas[comentario.id] != null and !comentariosRespostas[comentario.id].isEmpty()}" 
                          style="margin-top: 1rem; padding-left: 2rem; border-left: 2px solid #e7ecf5;">
-                        <button onclick="toggleRespostas('respostas_${comentario.id}')" 
+                        <button th:data-comentario-id="${comentario.id}" onclick="toggleRespostas(this.dataset.comentarioId)" 
                                 style="background: none; border: none; color: #5b687c; cursor: pointer; font-size: 0.9rem; padding: 0.3rem 0; font-weight: 500;">
                             📌 Exibir respostas (<span th:text="${comentariosRespostas[comentario.id].size()}">0</span>)
                         </button>
-                        <div id="respostas_${comentario.id}" style="display: none;">
+                        <div th:id="'respostas_' + ${comentario.id}" style="display: none;">
                             <div th:each="resposta : ${comentariosRespostas[comentario.id]}" class="card-resposta" style="padding: 1rem 0; border-bottom: 1px solid #e7ecf5;">
                                 <div class="resposta-meta">
                                     <span class="resposta-autor" th:text="${resposta.autorNome}">Autor</span>
@@ -446,7 +449,7 @@
                                         <input type="hidden" name="postId" th:value="${post.id}">
                                         <button type="submit" class="btn-acao-comentario">💔</button>
                                     </form>
-                                    <form th:if="${#authentication != null and (#authentication.name == resposta.autorNome or #authorization.expression('hasAuthority(''admin'')'))}"
+                                    <form th:if="${#authentication != null and (#authentication.name == resposta.autorNome or #authorization.expression('hasAnyAuthority(''admin'', ''mod'')'))}"
                                           th:action="@{/comentario/{id}/deletar(id=${resposta.id})}" 
                                           method="post" 
                                           style="display:inline;">
@@ -470,19 +473,51 @@
     </footer>
 
     <script>
-        function toggleRespostas(id) {
-            var element = document.getElementById(id);
-            if (element.style.display === 'none' || element.style.display === '') {
-                element.style.display = 'block';
-                var button = element.previousElementSibling;
-                if (button && button.tagName === 'BUTTON') {
-                    button.innerHTML = '📌 Ocultar respostas (<span>' + element.querySelectorAll('.card-resposta').length + '</span>)';
-                }
-            } else {
-                element.style.display = 'none';
-                var button = element.previousElementSibling;
-                if (button && button.tagName === 'BUTTON') {
-                    button.innerHTML = '📌 Exibir respostas (<span>' + element.querySelectorAll('.card-resposta').length + '</span>)';
+        function mostrarFormResposta(comentarioId) {
+            var form = document.getElementById('formResposta_' + comentarioId);
+            if (form) {
+                form.style.display = 'block';
+            }
+        }
+
+        function fecharFormResposta(comentarioId) {
+            var form = document.getElementById('formResposta_' + comentarioId);
+            if (form) {
+                form.style.display = 'none';
+            }
+        }
+
+        function mostrarFormEditar(comentarioId) {
+            var form = document.getElementById('formEditar_' + comentarioId);
+            if (form) {
+                form.style.display = 'block';
+            }
+        }
+
+        function fecharFormEditar(comentarioId) {
+            var form = document.getElementById('formEditar_' + comentarioId);
+            if (form) {
+                form.style.display = 'none';
+            }
+        }
+
+        function toggleRespostas(comentarioId) {
+            var element = document.getElementById('respostas_' + comentarioId);
+            if (element) {
+                if (element.style.display === 'none' || element.style.display === '') {
+                    element.style.display = 'block';
+                    var button = element.previousElementSibling;
+                    if (button && button.tagName === 'BUTTON') {
+                        var count = element.querySelectorAll('.card-resposta').length;
+                        button.innerHTML = '📌 Ocultar respostas (<span>' + count + '</span>)';
+                    }
+                } else {
+                    element.style.display = 'none';
+                    var button = element.previousElementSibling;
+                    if (button && button.tagName === 'BUTTON') {
+                        var count = element.querySelectorAll('.card-resposta').length;
+                        button.innerHTML = '📌 Exibir respostas (<span>' + count + '</span>)';
+                    }
                 }
             }
         }

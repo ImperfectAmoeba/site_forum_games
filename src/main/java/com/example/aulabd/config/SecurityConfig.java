@@ -45,32 +45,41 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        return http
-            .csrf(csrf -> csrf.disable())
-            .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/", "/login", "/css/**", "/js/**", "/usuario", "/listagem").permitAll()
-                
-                .requestMatchers("/categoria/cadastrar", "/categoria/listar", "/categoria/atribuir-moderador").hasAuthority("admin")
-                .requestMatchers("/moderador/**").hasAuthority("admin")
-                
-                .requestMatchers("/post/listar", "/post/{id}").permitAll()
-                .requestMatchers("/post/criar", "/post/{id}/editar", "/post/{id}/deletar").authenticated()
-                .requestMatchers("/post/{id}/editar", "/post/{id}/deletar").hasAnyAuthority("admin", "mod")
-                .anyRequest().authenticated()
-            )
-            .formLogin(form -> form
-                .loginPage("/login")
-                .loginProcessingUrl("/login")
-                .defaultSuccessUrl("/", true)
-                .failureUrl("/login?error")
-                .permitAll()
-            )
-            .logout(logout -> logout
-                .logoutUrl("/logout")
-                .logoutSuccessUrl("/login?logout")
-                .permitAll()
-            )
-            .build();
-    }
+public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    return http
+        .csrf(csrf -> csrf.disable())
+        .authorizeHttpRequests(auth -> auth
+            // Páginas públicas
+            .requestMatchers("/", "/login", "/css/**", "/js/**", "/usuario", "/listagem", "/post/listar", "/post/{id}").permitAll()
+            
+            // Categorias - admin OU mod podem criar/editar/excluir
+            .requestMatchers("/categoria/cadastrar", "/categoria/listar", "/categoria/{id}/editar", "/categoria/{id}/deletar").hasAnyAuthority("admin", "mod")
+            
+            // Moderadores (apenas admin pode gerenciar moderadores)
+            .requestMatchers("/moderador/**").hasAuthority("admin")
+            .requestMatchers("/admin/**").hasAuthority("admin")
+            
+            // Posts - admin OU mod podem editar/excluir qualquer post
+            .requestMatchers("/post/{id}/editar", "/post/{id}/deletar", "/post/{id}/mudar-categoria").hasAnyAuthority("admin", "mod")
+            .requestMatchers("/post/criar").authenticated()
+            
+            // Qualquer outra requisição exige login
+            .anyRequest().authenticated()
+        )
+        .formLogin(form -> form
+            .loginPage("/login")
+            .loginProcessingUrl("/login")
+            .defaultSuccessUrl("/", true)
+            .failureUrl("/login?error")
+            .permitAll()
+        )
+        .logout(logout -> logout
+            .logoutUrl("/logout")
+            .logoutSuccessUrl("/login?logout")
+            .permitAll()
+        )
+        .build();
+}
+
+    
 }

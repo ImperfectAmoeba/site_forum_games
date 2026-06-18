@@ -40,9 +40,10 @@ public class UsuarioDAO {
     }
 
     public ArrayList<Usuario> listar_usuarios() {
-        String sql = "SELECT * FROM usuario";
-        return Usuario.converterTodos(jdbc.queryForList(sql));
-    }
+    String sql = "SELECT u.*, p.cargo FROM usuario u " +
+                 "LEFT JOIN perfil p ON p.usuarioid = u.id";
+    return Usuario.converterTodos(jdbc.queryForList(sql));
+}
 
     public Usuario buscarPorNomeESenha(String nome, String senha) {
         String sql = "SELECT * FROM usuario WHERE nome = ? AND senha = ?";
@@ -105,6 +106,17 @@ public Usuario buscarPorNome(String nome) {
 public void atualizarSenha(String id, String novaSenha) {
     String sql = "UPDATE usuario SET senha = ? WHERE id = ?::uuid";
     jdbc.update(sql, novaSenha, id);
+}
+
+public void promoverModerador(String usuarioId) {
+    String sql = "INSERT INTO perfil (usuarioid, cargo) VALUES (?::uuid, 'mod') " +
+                 "ON CONFLICT (usuarioid) DO UPDATE SET cargo = 'mod'";
+    jdbc.update(sql, usuarioId);
+}
+
+public void rebaixarModerador(String usuarioId) {
+    String sql = "DELETE FROM perfil WHERE usuarioid = ?::uuid AND cargo = 'mod'";
+    jdbc.update(sql, usuarioId);
 }
 
 }

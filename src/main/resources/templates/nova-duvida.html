@@ -140,7 +140,6 @@
                     <li sec:authorize="isAnonymous()"><a th:href="@{/usuario}">Registrar</a></li>
                     <li sec:authorize="isAuthenticated()"><a th:href="@{/editar}">Editar Conta</a></li>
                     <li sec:authorize="isAuthenticated()"><a th:href="@{/excluir}">Excluir Conta</a></li>
-                    <li sec:authorize="hasAuthority('mod')"><a th:href="@{/moderador/pendentes}">Moderação</a></li>
                     <li sec:authorize="hasAuthority('admin')"><a th:href="@{/categoria/listar}">Categorias</a></li>
                     <li sec:authorize="isAuthenticated()">
                         <a th:href="@{/logout}" onclick="return confirm('Deseja sair?')">Sair</a>

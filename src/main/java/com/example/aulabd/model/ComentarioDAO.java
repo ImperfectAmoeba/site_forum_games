@@ -39,20 +39,21 @@ public class ComentarioDAO {
     }
     
     public List<Comentario> listarComentariosPorPost(String postId) {
-        String sql = "SELECT c.*, u.nome as autor_nome, " +
-                     "(SELECT COUNT(*) FROM curtida_comentario WHERE comentario_id = c.id) as curtidas " +
-                     "FROM comentario c " +
-                     "LEFT JOIN usuario u ON c.autor_id = u.id " +
-                     "WHERE c.post_id = ?::uuid " +
-                     "ORDER BY curtidas DESC, c.data_criacao ASC";
-        
-        List<Map<String, Object>> rows = jdbc.queryForList(sql, postId);
-        List<Comentario> comentarios = new ArrayList<>();
-        for (Map<String, Object> row : rows) {
-            comentarios.add(Comentario.converter(row));
-        }
-        return comentarios;
+    String sql = "SELECT c.*, u.nome as autor_nome, " +
+                 "(SELECT COUNT(*) FROM curtida_comentario WHERE comentario_id = c.id AND (tipo IS NULL OR tipo = 'curtir')) as curtidas " +
+                 "FROM comentario c " +
+                 "LEFT JOIN usuario u ON c.autor_id = u.id " +
+                 "WHERE c.post_id = ?::uuid " +
+                 "ORDER BY curtidas DESC, c.data_criacao ASC";
+    
+    List<Map<String, Object>> rows = jdbc.queryForList(sql, postId);
+    List<Comentario> comentarios = new ArrayList<>();
+    for (Map<String, Object> row : rows) {
+        Comentario comentario = Comentario.converter(row);
+        comentarios.add(comentario);
     }
+    return comentarios;
+}
     
     public void deletarComentario(String id) {
         String sql = "DELETE FROM comentario WHERE id = ?::uuid";
@@ -60,15 +61,15 @@ public class ComentarioDAO {
     }
     
     public void curtirComentario(String comentarioId, String usuarioId) {
-        String sql = "INSERT INTO curtida_comentario (comentario_id, usuario_id) VALUES (?::uuid, ?::uuid) " +
-                     "ON CONFLICT (comentario_id, usuario_id) DO NOTHING";
-        jdbc.update(sql, comentarioId, usuarioId);
-    }
+    String sql = "INSERT INTO curtida_comentario (comentario_id, usuario_id) VALUES (?::uuid, ?::uuid) " +
+                 "ON CONFLICT (comentario_id, usuario_id) DO NOTHING";
+    jdbc.update(sql, comentarioId, usuarioId);
+}
     
     public void descurtirComentario(String comentarioId, String usuarioId) {
-        String sql = "DELETE FROM curtida_comentario WHERE comentario_id = ?::uuid AND usuario_id = ?::uuid";
-        jdbc.update(sql, comentarioId, usuarioId);
-    }
+    String sql = "DELETE FROM curtida_comentario WHERE comentario_id = ?::uuid AND usuario_id = ?::uuid";
+    jdbc.update(sql, comentarioId, usuarioId);
+}
     
     public int contarCurtidas(String comentarioId) {
         String sql = "SELECT COUNT(*) FROM curtida_comentario WHERE comentario_id = ?::uuid";
@@ -76,12 +77,12 @@ public class ComentarioDAO {
     }
     
     public Comentario buscarComentarioPorId(String id) {
-        String sql = "SELECT c.*, u.nome as autor_nome FROM comentario c " +
-                     "LEFT JOIN usuario u ON c.autor_id = u.id " +
-                     "WHERE c.id = ?::uuid";
-        Map<String, Object> row = jdbc.queryForMap(sql, id);
-        return Comentario.converter(row);
-    }
+    String sql = "SELECT c.*, u.nome as autor_nome FROM comentario c " +
+                 "LEFT JOIN usuario u ON c.autor_id = u.id " +
+                 "WHERE c.id = ?::uuid";
+    Map<String, Object> row = jdbc.queryForMap(sql, id);
+    return Comentario.converter(row);
+}
 
     public void atualizarComentario(Comentario comentario) {
     String sql = "UPDATE comentario SET conteudo = ?, data_atualizacao = ? WHERE id = ?::uuid";

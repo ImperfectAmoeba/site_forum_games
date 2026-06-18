@@ -70,6 +70,8 @@ public class Usuario {
     } else {
         id = (String) idObj;  // Se já for String, usa direto
     }
+
+    
     
     String email = (String) registro.get("email");
     String senha = (String) registro.get("senha");
@@ -78,11 +80,22 @@ public class Usuario {
 }
 
     public static ArrayList<Usuario> converterTodos(List<Map<String,Object>> registros){
-        ArrayList<Usuario> aux = new ArrayList<>();
-        for(Map<String,Object> registro : registros){
-            aux.add(converter(registro));
+    ArrayList<Usuario> aux = new ArrayList<>();
+    for(Map<String,Object> registro : registros){
+        Usuario u = converter(registro);  // ← GUARDA O RESULTADO!
+        
+        if (registro.containsKey("cargo") && registro.get("cargo") != null) {
+            u.setCargo((String) registro.get("cargo"));
         }
-        return aux;
+        
+        aux.add(u);
     }
+    return aux;
+}
+
+    private String cargo;
+
+public String getCargo() { return cargo; }
+public void setCargo(String cargo) { this.cargo = cargo; }
 
 }

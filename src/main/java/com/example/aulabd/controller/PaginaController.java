@@ -224,4 +224,25 @@ public String index(Model model) {
         
         return "redirect:/?editado=sucesso";
     }
+
+@PostMapping("/admin/usuario/{id}/promover")
+public String promoverModerador(@PathVariable("id") String id) {
+    UsuarioService cs = context.getBean(UsuarioService.class);
+    cs.promoverModerador(id);
+    return "redirect:/listagem";
+}
+
+@PostMapping("/admin/usuario/{id}/rebaixar")
+public String rebaixarModerador(@PathVariable("id") String id) {
+    UsuarioService cs = context.getBean(UsuarioService.class);
+    cs.rebaixarModerador(id);
+    return "redirect:/listagem";
+}
+
+@PostMapping("/admin/usuario/{id}/deletar")
+public String deletarUsuarioAdmin(@PathVariable("id") String id) {
+    UsuarioService cs = context.getBean(UsuarioService.class);
+    cs.deletarUsuario(id);
+    return "redirect:/listagem";
+}
     }

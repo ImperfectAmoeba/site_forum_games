@@ -36,6 +36,6 @@ public class ComentarioService {
     }
 
     public void atualizarComentario(Comentario comentario) {
-    comentarioDAO.atualizarComentario(comentario);
-}
+        comentarioDAO.atualizarComentario(comentario);
+    }
 }

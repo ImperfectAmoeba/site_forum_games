@@ -79,40 +79,6 @@
         .tabela-usuarios tbody tr:last-child td {
             border-bottom: none;
         }
-
-        .id-usuario {
-            font-family: 'Courier New', monospace;
-            font-size: 0.85rem;
-            color: #5b687c;
-            background: #f0f2f5;
-            padding: 0.3rem 0.6rem;
-            border-radius: 8px;
-            display: inline-block;
-        }
-
-        .nome-usuario {
-            font-weight: 600;
-            color: #1e2b41;
-        }
-
-        .empty-message {
-            text-align: center;
-            padding: 3rem;
-            color: #7a889c;
-            background: white;
-            border-radius: 24px;
-            border: 1px solid #e7ecf5;
-        }
-
-        .footer-note {
-            margin-top: 1.5rem;
-            text-align: center;
-            font-size: 0.85rem;
-            color: #7a889c;
-            background: #f8fafd;
-            padding: 0.8rem;
-            border-radius: 12px;
-        }
     </style>
 </head>
 <body>
@@ -120,35 +86,23 @@
         <div class="container header-container">
             <h1 class="logo"><a href="index.html">GameHelp Forum</a></h1>
             <nav>
-    <ul class="nav-links">
-        <!-- Links comuns para todos -->
-        <li sec:authorize="isAuthenticated()" class="user-greeting">
-            <span>Olá, <strong sec:authentication="name"></strong>!</span>
-        </li>
-        <li><a th:href="@{/}">Início</a></li>
-        <li><a th:href="@{/nova-duvida}">Nova Dúvida</a></li>
-        <li><a th:href="@{/listagem}">Usuários</a></li>
-
-        <!-- ===== USUÁRIO NÃO LOGADO ===== -->
-        <li sec:authorize="isAnonymous()"><a th:href="@{/login}">Entrar</a></li>
-        <li sec:authorize="isAnonymous()"><a th:href="@{/usuario}">Registrar</a></li>
-
-        <!-- ===== USUÁRIO LOGADO (COMUM) ===== -->
-        <li sec:authorize="isAuthenticated()"><a th:href="@{/editar}">Editar Conta</a></li>
-        <li sec:authorize="isAuthenticated()"><a th:href="@{/excluir}">Excluir Conta</a></li>
-
-        <!-- ===== MODERADOR (cargo 'mod') ===== -->
-        <li sec:authorize="hasAuthority('mod')"><a th:href="@{/moderador/pendentes}">Moderação</a></li>
-
-        <!-- ===== ADMIN (cargo 'admin') ===== -->
-        <li sec:authorize="hasAuthority('admin')"><a th:href="@{/categoria/listar}">Categorias</a></li>
-
-        <!-- ===== SAIR (para todos logados) ===== -->
-        <li sec:authorize="isAuthenticated()">
-            <a th:href="@{/logout}" class="logout-btn" onclick="return confirm('Deseja sair?')">Sair</a>
-        </li>
-    </ul>
-</nav>
+                <ul class="nav-links">
+                    <li sec:authorize="isAuthenticated()" class="user-greeting">
+                        <span>Olá, <strong sec:authentication="name"></strong>!</span>
+                    </li>
+                    <li><a th:href="@{/}">Início</a></li>
+                    <li><a th:href="@{/nova-duvida}">Nova Dúvida</a></li>
+                    <li><a th:href="@{/listagem}">Usuários</a></li>
+                    <li sec:authorize="isAnonymous()"><a th:href="@{/login}">Entrar</a></li>
+                    <li sec:authorize="isAnonymous()"><a th:href="@{/usuario}">Registrar</a></li>
+                    <li sec:authorize="isAuthenticated()"><a th:href="@{/editar}">Editar Conta</a></li>
+                    <li sec:authorize="isAuthenticated()"><a th:href="@{/excluir}">Excluir Conta</a></li>
+                    <li sec:authorize="hasAuthority('admin')"><a th:href="@{/categoria/listar}">Categorias</a></li>
+                    <li sec:authorize="isAuthenticated()">
+                        <a th:href="@{/logout}" class="logout-btn" onclick="return confirm('Deseja sair?')">Sair</a>
+                    </li>
+                </ul>
+            </nav>
         </div>
     </header>
 
@@ -164,12 +118,36 @@
                     <tr>
                         <th>ID</th>
                         <th>NOME</th>
+                        <th>CARGO</th>
+                        <th sec:authorize="hasAuthority('admin')">AÇÃO</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr th:each="usuario : ${usuarios}">
                         <td th:text="${usuario.id}"></td>
                         <td th:text="${usuario.nome}"></td>
+                        <td th:text="${usuario != null and usuario.cargo != null ? usuario.cargo : 'user'}"></td>
+                        <td sec:authorize="hasAuthority('admin')">
+                            <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                                <!-- Se for moderador, mostra REBAIXAR -->
+                                <form th:if="${usuario != null and usuario.cargo == 'mod'}" 
+                                      th:action="@{/admin/usuario/{id}/rebaixar(id=${usuario.id})}" method="post" style="display:inline;">
+                                    <button type="submit" style="background-color: #fff3cd; color: #856404; border: none; padding: 0.3rem 0.8rem; border-radius: 20px; cursor: pointer; font-size: 0.8rem;">⬇️ Rebaixar</button>
+                                </form>
+                                
+                                <!-- Se NÃO for moderador (e não for admin), mostra PROMOVER -->
+                                <form th:if="${usuario != null and usuario.cargo != 'mod' and usuario.cargo != 'admin'}" 
+                                      th:action="@{/admin/usuario/{id}/promover(id=${usuario.id})}" method="post" style="display:inline;">
+                                    <button type="submit" style="background-color: #e3eaf3; color: #1e3b5c; border: none; padding: 0.3rem 0.8rem; border-radius: 20px; cursor: pointer; font-size: 0.8rem;">👑 Promover</button>
+                                </form>
+                                
+                                <!-- Excluir (nunca mostra para admin) -->
+                                <form th:if="${usuario != null and usuario.cargo != 'admin'}" 
+                                      th:action="@{/admin/usuario/{id}/deletar(id=${usuario.id})}" method="post" style="display:inline;">
+                                    <button type="submit" style="background-color: #ffe6e6; color: #a13030; border: none; padding: 0.3rem 0.8rem; border-radius: 20px; cursor: pointer; font-size: 0.8rem;" onclick="return confirm('Tem certeza que deseja excluir este usuário?')">🗑️ Excluir</button>
+                                </form>
+                            </div>
+                        </td>
                     </tr>
                 </tbody>
             </table>

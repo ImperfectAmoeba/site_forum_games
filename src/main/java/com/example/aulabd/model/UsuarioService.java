@@ -59,4 +59,12 @@ public class UsuarioService {
     public void atualizarSenha(String id, String novaSenha) {
         usuarioDAO.atualizarSenha(id, novaSenha);
     }
+
+    public void promoverModerador(String usuarioId) {
+    usuarioDAO.promoverModerador(usuarioId);
+}
+
+public void rebaixarModerador(String usuarioId) {
+    usuarioDAO.rebaixarModerador(usuarioId);
+}
 }

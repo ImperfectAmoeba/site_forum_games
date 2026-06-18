@@ -8,7 +8,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.example.aulabd.model.Comentario;
 import com.example.aulabd.model.ComentarioService;
@@ -81,6 +80,17 @@ public class ComentarioController {
         ComentarioService cs = context.getBean(ComentarioService.class);
         cs.descurtirComentario(id, usuario.getId());
         
+        return "redirect:/post/" + postId;
+    }
+
+    @PostMapping("/comentario/{id}/editar")
+    public String editarComentario(@PathVariable("id") String id,
+                                    @RequestParam String postId,
+                                    @RequestParam String conteudo) {
+        ComentarioService cs = context.getBean(ComentarioService.class);
+        Comentario comentario = cs.buscarComentarioPorId(id);
+        comentario.setConteudo(conteudo);
+        cs.atualizarComentario(comentario);
         return "redirect:/post/" + postId;
     }
 }
