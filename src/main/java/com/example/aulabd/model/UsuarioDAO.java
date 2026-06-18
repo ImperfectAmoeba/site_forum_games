@@ -83,9 +83,16 @@ public class UsuarioDAO {
 }
 
 public void atribuirModerador(String usuarioId) {
-    String sql = "INSERT INTO perfil (usuarioid, cargo) VALUES (?::uuid, 'mod') " +
-                 "ON CONFLICT (usuarioid) DO UPDATE SET cargo = 'mod'";
-    jdbc.update(sql, usuarioId);
+    String checkSql = "SELECT COUNT(*) FROM perfil WHERE usuarioid = ?::uuid";
+    int count = jdbc.queryForObject(checkSql, Integer.class, usuarioId);
+    
+    if (count > 0) {
+        String sql = "UPDATE perfil SET cargo = 'mod' WHERE usuarioid = ?::uuid";
+        jdbc.update(sql, usuarioId);
+    } else {
+        String sql = "INSERT INTO perfil (usuarioid, cargo) VALUES (?::uuid, 'mod')";
+        jdbc.update(sql, usuarioId);
+    }
 }
 
 public void removerModerador(String usuarioId) {
@@ -109,9 +116,19 @@ public void atualizarSenha(String id, String novaSenha) {
 }
 
 public void promoverModerador(String usuarioId) {
-    String sql = "INSERT INTO perfil (usuarioid, cargo) VALUES (?::uuid, 'mod') " +
-                 "ON CONFLICT (usuarioid) DO UPDATE SET cargo = 'mod'";
-    jdbc.update(sql, usuarioId);
+    // Primeiro verifica se o registro existe
+    String checkSql = "SELECT COUNT(*) FROM perfil WHERE usuarioid = ?::uuid";
+    int count = jdbc.queryForObject(checkSql, Integer.class, usuarioId);
+    
+    if (count > 0) {
+        // Se existe, atualiza
+        String sql = "UPDATE perfil SET cargo = 'mod' WHERE usuarioid = ?::uuid";
+        jdbc.update(sql, usuarioId);
+    } else {
+        // Se não existe, insere
+        String sql = "INSERT INTO perfil (usuarioid, cargo) VALUES (?::uuid, 'mod')";
+        jdbc.update(sql, usuarioId);
+    }
 }
 
 public void rebaixarModerador(String usuarioId) {
